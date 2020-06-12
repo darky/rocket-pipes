@@ -4,7 +4,8 @@
   "description": "Powerful pipes, that fold promises and ADT for you",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "test": "jest"
   },
   "files": [],
   "keywords": [
