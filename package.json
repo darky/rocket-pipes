@@ -25,7 +25,10 @@
     "p-is-promise": "3.0.0"
   },
   "devDependencies": {
+    "@types/jest": "22.2.3",
+    "jest": "26.0.1",
     "monet": "0.9.1",
+    "ts-jest": "26.1.0",
     "typescript": "3.9.5"
   }
 }

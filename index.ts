@@ -27,8 +27,8 @@ const compose = (fn: Function, res: unknown) => {
 export function rocketPipe<T1>(
   fn0: () =>
     | T1
-    | Promise<T1>
     | Promise<Either<unknown, T1>>
+    | Promise<T1>
     | Either<unknown, T1>
 ): () => Promise<T1>;
 export function rocketPipe<V0, T1>(
@@ -53,12 +53,12 @@ export function rocketPipe<V0, V1, V2, T1>(
 export function rocketPipe<T1, T2>(
   fn0: () =>
     | T1
-    | Promise<T1>
     | Promise<Either<unknown, T1>>
+    | Promise<T1>
     | Either<unknown, T1>,
   fn1: (
     x: T1
-  ) => T2 | Promise<T2> | Promise<Either<unknown, T2>> | Either<unknown, T2>
+  ) => T2 | Promise<Either<unknown, T2>> | Promise<T2> | Either<unknown, T2>
 ): () => Promise<T2>;
 export function rocketPipe<V0, T1, T2>(
   fn0: (
@@ -830,5 +830,5 @@ export function rocketPipe(...fns: Array<Function>) {
       return res.then((x) => compose(fn, x)).catch(() => res);
     }
     return compose(fn, res);
-  }, ...fns);
+  }, fns);
 }
