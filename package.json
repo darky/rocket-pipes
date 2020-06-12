@@ -1,0 +1,31 @@
+{
+  "name": "rocket-pipes",
+  "version": "0.0.1",
+  "description": "Powerful pipes, that fold promises and ADT for you",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "files": [],
+  "keywords": [
+    "ramda",
+    "pipe",
+    "pipeline",
+    "Kleisli",
+    "compose",
+    "composition",
+    "maybe",
+    "promise",
+    "either"
+  ],
+  "author": "Vladislav Botvin",
+  "license": "MIT",
+  "dependencies": {
+    "@ramda/pipewith": "0.26.1",
+    "p-is-promise": "3.0.0"
+  },
+  "devDependencies": {
+    "monet": "0.9.1",
+    "typescript": "3.9.5"
+  }
+}
