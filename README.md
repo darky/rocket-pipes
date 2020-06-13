@@ -1,6 +1,6 @@
 # Rocket pipes
 
-Powerful pipes, that can chain Promise and ADT like Maybe or Either from popular FP libraries
+Powerful pipes, that chain Promise and ADT like Maybe or Either from popular FP libraries
 (currently tested Monet only)
 
 ## Examples

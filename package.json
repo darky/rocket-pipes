@@ -1,7 +1,7 @@
 {
   "name": "rocket-pipes",
   "version": "0.1.0",
-  "description": "Powerful pipes, that chain promises and ADT for you",
+  "description": "Powerful pipes, that chain Promise and ADT for you",
   "repository": {
     "type": "git",
     "url": "git@github.com:darky/rocket-pipes.git"
