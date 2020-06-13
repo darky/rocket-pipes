@@ -21,6 +21,17 @@ describe("Rocket pipes tests", () => {
         )()
       ).rejects.toEqual("qwe");
     });
+
+    it("Simple error test", async () => {
+      expect(
+        rocketPipe(
+          () => {
+            throw new Error("qwe");
+          },
+          (n) => n + 1
+        )()
+      ).rejects.toEqual("qwe");
+    });
   });
 
   describe("Promise", () => {

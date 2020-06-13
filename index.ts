@@ -332,7 +332,7 @@ export function rocketPipe<V0, V1, V2, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, 
 
 export function rocketPipe(...fns: Array<Function>) {
   return pipeWith(async (fn, res) => (isPromise(res) ? res.then((x) => compose(fn, x)).catch(() => res) : compose(fn, res)), [
-    ...fns,
+    ...fns.map((fn) => async (r: unknown, l: unknown) => fn(r, l)),
     (r: unknown, l: unknown) => r ?? l,
   ]);
 }
