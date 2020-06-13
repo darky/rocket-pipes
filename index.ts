@@ -23,7 +23,9 @@ const compose = (fn: Function, res: unknown) => {
 };
 
 export function rocketPipe<T1, L1>(fn0: () => Promise<Either<L1, T1>> | Promise<T1> | Either<L1, T1> | T1): () => Promise<T1 & L1>;
-export function rocketPipe<V0, T1, L1>(fn0: (x0: V0) => Promise<Either<L1, T1>> | Promise<T1> | Either<L1, T1> | T1): (x0: V0) => Promise<T1 & L1>;
+export function rocketPipe<V0, T1, L1>(
+  fn0: (x0: V0) => Promise<Either<L1, T1>> | Promise<T1> | Either<L1, T1> | T1
+): (x0: V0) => Promise<T1 & L1>;
 export function rocketPipe<V0, V1, T1, L1>(
   fn0: (x0: V0, x1: V1) => Promise<Either<L1, T1>> | Promise<T1> | Either<L1, T1> | T1
 ): (x0: V0, x1: V1) => Promise<T1 & L1>;
@@ -329,5 +331,8 @@ export function rocketPipe<V0, V1, V2, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, 
 ): (x0: V0, x1: V1, x2: V2) => Promise<T10 & L10>;
 
 export function rocketPipe(...fns: Array<Function>) {
-  return pipeWith(async (fn, res) => (isPromise(res) ? res.then((x) => compose(fn, x)).catch(() => res) : compose(fn, res)), fns);
+  return pipeWith(async (fn, res) => (isPromise(res) ? res.then((x) => compose(fn, x)).catch(() => res) : compose(fn, res)), [
+    ...fns,
+    (r: unknown, l: unknown) => r ?? l,
+  ]);
 }

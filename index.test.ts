@@ -59,6 +59,14 @@ describe("Rocket pipes tests", () => {
       expect(resp + 1).toEqual(125);
     });
 
+    it("Either right result test", async () => {
+      const resp = await rocketPipe(
+        () => Promise.resolve(Either.left(123)),
+        (_, l) => Either.right(l + 1)
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
     it("Either left test", async () => {
       const resp = await rocketPipe(
         () => Either.left(123),
@@ -75,7 +83,7 @@ describe("Rocket pipes tests", () => {
       expect(resp + 1).toEqual(125);
     });
 
-    it.skip("Either left result test", async () => {
+    it("Either left result test", async () => {
       const resp = await rocketPipe(
         () => Promise.resolve(Either.left(123)),
         (_, l) => Either.left(l + 1)
