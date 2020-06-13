@@ -1,4 +1,4 @@
-import { rocketPipe } from ".";
+import { rocketPipe } from "./index";
 import { Either } from "monet";
 
 describe("Rocket pipes tests", () => {
@@ -8,7 +8,7 @@ describe("Rocket pipes tests", () => {
         () => 123,
         (n) => n + 1
       )();
-      expect(resp).toEqual(124);
+      expect(resp + 1).toEqual(125);
     });
 
     it("Simple error test", async () => {
@@ -29,7 +29,7 @@ describe("Rocket pipes tests", () => {
         () => Promise.resolve(123),
         (n) => n + 1
       )();
-      expect(resp).toEqual(124);
+      expect(resp + 1).toEqual(125);
     });
 
     it("Promise reject test", async () => {
@@ -48,7 +48,7 @@ describe("Rocket pipes tests", () => {
         () => Either.right(123),
         (n) => n + 1
       )();
-      expect(resp).toEqual(124);
+      expect(resp + 1).toEqual(125);
     });
 
     it("Either right in promise pass test", async () => {
@@ -56,7 +56,7 @@ describe("Rocket pipes tests", () => {
         () => Promise.resolve(Either.right(123)),
         (n) => n + 1
       )();
-      expect(resp).toEqual(124);
+      expect(resp + 1).toEqual(125);
     });
 
     it("Either left test", async () => {
@@ -64,7 +64,7 @@ describe("Rocket pipes tests", () => {
         () => Either.left(123),
         (_, l) => l + 1
       )();
-      expect(resp).toEqual(124);
+      expect(resp + 1).toEqual(125);
     });
 
     it("Either left in promise test", async () => {
@@ -72,7 +72,15 @@ describe("Rocket pipes tests", () => {
         () => Promise.resolve(Either.left(123)),
         (_, l) => l + 1
       )();
-      expect(resp).toEqual(124);
+      expect(resp + 1).toEqual(125);
+    });
+
+    it.skip("Either left result test", async () => {
+      const resp = await rocketPipe(
+        () => Promise.resolve(Either.left(123)),
+        (_, l) => Either.left(l + 1)
+      )();
+      expect(resp + 1).toEqual(125);
     });
   });
 });
