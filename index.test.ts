@@ -1,5 +1,5 @@
 import { rocketPipe } from "./index";
-import { Either } from "monet";
+import { Either, Maybe } from "monet";
 
 describe("Rocket pipes tests", () => {
   describe("Simple", () => {
@@ -100,6 +100,48 @@ describe("Rocket pipes tests", () => {
         (_, l) => Either.left(l + 1)
       )();
       expect(resp + 1).toEqual(125);
+    });
+  });
+
+  describe("Monet Maybe", () => {
+    it("Maybe some passthrough test", async () => {
+      const resp = await rocketPipe(
+        () => Maybe.some(123),
+        (n) => n + 1
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("Maybe some in promise passthrough test", async () => {
+      const resp = await rocketPipe(
+        () => Promise.resolve(Maybe.some(123)),
+        (n) => n + 1
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("Maybe some result test", async () => {
+      const resp = await rocketPipe(
+        () => Promise.resolve(Maybe.some(123)),
+        (n) => Maybe.some(n + 1)
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("Maybe none passthrough and result test", async () => {
+      const resp = await rocketPipe(
+        () => Maybe.none(),
+        (s, n) => s || n
+      )();
+      expect(resp).toEqual(void 0);
+    });
+
+    it("Maybe none passthrough in promise test", async () => {
+      const resp = await rocketPipe(
+        () => Promise.resolve(Maybe.none()),
+        (s, n) => s || n
+      )();
+      expect(resp).toEqual(void 0);
     });
   });
 });
