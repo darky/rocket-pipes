@@ -3,7 +3,7 @@ import { Either } from "monet";
 
 describe("Rocket pipes tests", () => {
   describe("Simple", () => {
-    it("Simple pass test", async () => {
+    it("Simple passthrough test", async () => {
       const resp = await rocketPipe(
         () => 123,
         (n) => n + 1
@@ -11,7 +11,7 @@ describe("Rocket pipes tests", () => {
       expect(resp + 1).toEqual(125);
     });
 
-    it("Simple error test", async () => {
+    it("Simple async error test", async () => {
       expect(
         rocketPipe(
           async () => {
@@ -24,7 +24,7 @@ describe("Rocket pipes tests", () => {
   });
 
   describe("Promise", () => {
-    it("Promise pass test", async () => {
+    it("Promise passthrough test", async () => {
       const resp = await rocketPipe(
         () => Promise.resolve(123),
         (n) => n + 1
@@ -42,8 +42,8 @@ describe("Rocket pipes tests", () => {
     });
   });
 
-  describe("Monet", () => {
-    it("Either right pass test", async () => {
+  describe("Monet Either", () => {
+    it("Either right passthrough test", async () => {
       const resp = await rocketPipe(
         () => Either.right(123),
         (n) => n + 1
@@ -51,7 +51,7 @@ describe("Rocket pipes tests", () => {
       expect(resp + 1).toEqual(125);
     });
 
-    it("Either right in promise pass test", async () => {
+    it("Either right in promise passthrough test", async () => {
       const resp = await rocketPipe(
         () => Promise.resolve(Either.right(123)),
         (n) => n + 1
