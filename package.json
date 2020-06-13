@@ -1,13 +1,23 @@
 {
   "name": "rocket-pipes",
-  "version": "0.0.1",
-  "description": "Powerful pipes, that fold promises and ADT for you",
-  "main": "index.js",
+  "version": "0.1.0",
+  "description": "Powerful pipes, that chain promises and ADT for you",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:darky/rocket-pipes.git"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "rimraf dist && tsc",
     "test": "jest"
   },
-  "files": [],
+  "files": [
+    "index.ts",
+    "dist/index.js",
+    "dist/index.d.ts",
+    "dist/index.js.map"
+  ],
   "keywords": [
     "ramda",
     "pipe",
@@ -17,18 +27,23 @@
     "composition",
     "maybe",
     "promise",
-    "either"
+    "either",
+    "result",
+    "validation",
+    "adt",
+    "monet"
   ],
   "author": "Vladislav Botvin",
   "license": "MIT",
   "dependencies": {
     "@ramda/pipewith": "0.26.1",
+    "monet": "0.9.1",
     "p-is-promise": "3.0.0"
   },
   "devDependencies": {
-    "@types/jest": "22.2.3",
+    "@types/jest": "26.0.0",
     "jest": "26.0.1",
-    "monet": "0.9.1",
+    "rimraf": "3.0.2",
     "ts-jest": "26.1.0",
     "typescript": "3.9.5"
   }
