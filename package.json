@@ -7,7 +7,7 @@
     "url": "git@github.com:darky/rocket-pipes.git"
   },
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "types": "index.ts",
   "scripts": {
     "clean": "rimraf dist",
     "build": "npm run clean && tsc",
@@ -16,7 +16,6 @@
   "files": [
     "index.ts",
     "dist/index.js",
-    "dist/index.d.ts",
     "dist/index.js.map"
   ],
   "keywords": [
