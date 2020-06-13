@@ -3,12 +3,23 @@ import { Either } from "monet";
 
 describe("Rocket pipes tests", () => {
   describe("Simple", () => {
-    it("Simple test", async () => {
+    it("Simple pass test", async () => {
       const resp = await rocketPipe(
         () => 123,
         (n) => n + 1
       )();
       expect(resp).toEqual(124);
+    });
+
+    it("Simple error test", async () => {
+      expect(
+        rocketPipe(
+          async () => {
+            throw new Error("qwe");
+          },
+          (n) => n + 1
+        )()
+      ).rejects.toEqual("qwe");
     });
   });
 
@@ -44,6 +55,22 @@ describe("Rocket pipes tests", () => {
       const resp = await rocketPipe(
         () => Promise.resolve(Either.right(123)),
         (n) => n + 1
+      )();
+      expect(resp).toEqual(124);
+    });
+
+    it("Either left test", async () => {
+      const resp = await rocketPipe(
+        () => Either.left(123),
+        (_, l) => l + 1
+      )();
+      expect(resp).toEqual(124);
+    });
+
+    it("Either left in promise test", async () => {
+      const resp = await rocketPipe(
+        () => Promise.resolve(Either.left(123)),
+        (n, l) => l + 1
       )();
       expect(resp).toEqual(124);
     });
