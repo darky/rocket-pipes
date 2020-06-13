@@ -70,7 +70,7 @@ describe("Rocket pipes tests", () => {
     it("Either left in promise test", async () => {
       const resp = await rocketPipe(
         () => Promise.resolve(Either.left(123)),
-        (n, l) => l + 1
+        (_, l) => l + 1
       )();
       expect(resp).toEqual(124);
     });

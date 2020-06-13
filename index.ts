@@ -33,7 +33,7 @@ export function rocketPipe<V0, V1, V2, T1, L1>(
 
 export function rocketPipe<T1, T2, L1, L2>(
   fn0: () => Promise<Either<L1, T1>> | Promise<T1> | Either<L1, T1> | T1,
-  fn1: (x: T1, l: L1) => T2 | Promise<Either<L2, T2>> | Promise<T2> | Either<L2, T2>
+  fn1: (x: T1, l: L1) => Promise<Either<L2, T2>> | Promise<T2> | Either<L2, T2> | T2
 ): () => Promise<T2 | L2>;
 export function rocketPipe<V0, T1, T2, L1, L2>(
   fn0: (x0: V0) => Promise<Either<L1, T1>> | Promise<T1> | Either<L1, T1> | T1,
