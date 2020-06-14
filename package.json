@@ -1,6 +1,6 @@
 {
   "name": "rocket-pipes",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Powerful pipes, that chain Promise and ADT for you",
   "repository": {
     "type": "git",
@@ -11,7 +11,8 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "npm run clean && tsc",
-    "test": "jest"
+    "test": "jest",
+    "prepublish": "npm run build"
   },
   "files": [
     "index.ts",
