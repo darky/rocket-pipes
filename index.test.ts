@@ -41,7 +41,7 @@ describe("Rocket pipes tests", () => {
         (n) => exitPipe(n + 1),
         (n) => "qwe"
       )();
-      expect(resp).toEqual(124);
+      expect(<number>resp + 1).toEqual(125);
     });
 
     it("Exit promise pipeline", async () => {
@@ -50,7 +50,7 @@ describe("Rocket pipes tests", () => {
         (n) => Promise.resolve(exitPipe(n + 1)),
         (n) => "qwe"
       )();
-      expect(resp).toEqual(124);
+      expect(<number>resp + 1).toEqual(125);
     });
   });
 
