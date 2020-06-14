@@ -37,17 +37,14 @@
   "license": "MIT",
   "dependencies": {
     "@ramda/pipewith": "0.26.1",
+    "monet": "0.9.1",
     "p-is-promise": "3.0.0"
   },
   "devDependencies": {
     "@types/jest": "26.0.0",
     "jest": "26.0.1",
-    "monet": "0.9.1",
     "rimraf": "3.0.2",
     "ts-jest": "26.1.0",
     "typescript": "3.9.5"
-  },
-  "peerDependencies": {
-    "monet": "^0.9.1"
   }
 }
