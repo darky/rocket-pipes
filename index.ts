@@ -2,6 +2,12 @@ import type { Either, Catamorphism, Maybe } from "monet";
 import isPromise from "p-is-promise";
 import pipeWith from "@ramda/pipewith";
 
+type ExitPipeReturnValue<T> = { x: T };
+
+const exitPipeReturnValues = new WeakSet();
+
+const isExitPipeReturnValue = <T>(x: unknown): x is ExitPipeReturnValue<T> => exitPipeReturnValues.has(x as object);
+
 const isFoldable = <L, R>(x: unknown): x is Either<L, R> => x && typeof (x as Either<L, R>).fold === "function";
 
 const isCata = <L, R>(x: unknown): x is Catamorphism<L, R> => x && typeof (x as Catamorphism<L, R>).cata === "function";
@@ -21,6 +27,12 @@ const compose = (fn: Function, res: unknown) => {
   }
   return fn(res);
 };
+
+export function exitPipe<T>(x: T) {
+  const exitPipeReturnValue: ExitPipeReturnValue<T> = { x };
+  exitPipeReturnValues.add(exitPipeReturnValue);
+  return exitPipeReturnValue;
+}
 
 export function rocketPipe<T1, L1>(
   fn0: () => Promise<Either<L1, T1>> | Promise<Maybe<T1>> | Promise<T1> | Maybe<T1> | Either<L1, T1> | T1
@@ -333,8 +345,13 @@ export function rocketPipe<V0, V1, V2, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, 
 ): (x0: V0, x1: V1, x2: V2) => Promise<T10 & L10>;
 
 export function rocketPipe(...fns: Array<Function>) {
-  return pipeWith(async (fn, res) => (isPromise(res) ? res.then((x) => compose(fn, x)).catch(() => res) : compose(fn, res)), [
-    ...fns.map((fn) => async (r: unknown, l: unknown) => fn(r, l)),
-    (r: unknown, l: unknown) => r ?? l,
-  ]);
+  return pipeWith(
+    async (fn, res) =>
+      isPromise(res)
+        ? res.then((x) => (isExitPipeReturnValue(x) ? x.x : compose(fn, x))).catch(() => res)
+        : isExitPipeReturnValue(res)
+        ? res.x
+        : compose(fn, res),
+    [...fns.map((fn) => async (r: unknown, l: unknown) => fn(r, l)), (r: unknown, l: unknown) => r ?? l]
+  );
 }

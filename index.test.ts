@@ -1,4 +1,4 @@
-import { rocketPipe } from "./index";
+import { rocketPipe, exitPipe } from "./index";
 import { Either, Maybe } from "monet";
 
 describe("Rocket pipes tests", () => {
@@ -31,6 +31,26 @@ describe("Rocket pipes tests", () => {
           (n) => n + 1
         )()
       ).rejects.toEqual("qwe");
+    });
+  });
+
+  describe("Utils", () => {
+    it("Exit pipeline", async () => {
+      const resp = await rocketPipe(
+        () => 123,
+        (n) => exitPipe(n + 1),
+        (n) => "qwe"
+      )();
+      expect(resp).toEqual(124);
+    });
+
+    it("Exit promise pipeline", async () => {
+      const resp = await rocketPipe(
+        () => 123,
+        (n) => Promise.resolve(exitPipe(n + 1)),
+        (n) => "qwe"
+      )();
+      expect(resp).toEqual(124);
     });
   });
 
