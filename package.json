@@ -1,7 +1,7 @@
 {
   "name": "rocket-pipes",
   "version": "0.2.0",
-  "description": "Powerful pipes, that chain Promise and ADT for you",
+  "description": "Powerful pipes for TypeScript, that chain Promise and ADT for you",
   "repository": {
     "type": "git",
     "url": "git@github.com:darky/rocket-pipes.git"
@@ -32,7 +32,9 @@
     "result",
     "validation",
     "adt",
-    "monet"
+    "monet",
+    "ts",
+    "typescript"
   ],
   "author": "Vladislav Botvin",
   "license": "MIT",
