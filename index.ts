@@ -18,6 +18,9 @@ const isFoldable = <L, R>(x: unknown): x is Either<L, R> => x && typeof (x as Ei
 const isCata = <L, R>(x: unknown): x is Catamorphism<L, R> => x && typeof (x as Catamorphism<L, R>).cata === "function";
 
 const compose = (fn: Function, res: unknown) => {
+  if (isExitPipeReturnValue(res)) {
+    return res.x;
+  }
   if (isCata(res)) {
     return res.cata(
       (l) => fn(null, l),
@@ -344,9 +347,8 @@ export function rocketPipe<V0, V1, V2, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, 
 ): (x0: V0, x1: V1, x2: V2) => Promise<Union.Select<R10 | R9 | R8 | R7 | R6 | R5 | R4 | R3 | R2 | R1 | L10 | T10, Exists, "extends->">>;
 
 export function rocketPipe(...fns: Array<Function>) {
-  return pipeWith(
-    async (fn, res) =>
-      isPromise(res) ? res.then((x) => (isExitPipeReturnValue(x) ? x.x : compose(fn, x))).catch(() => res) : isExitPipeReturnValue(res) ? res.x : compose(fn, res),
-    [...fns.map((fn) => async (r: unknown, l: unknown) => fn(r, l)), (r: unknown, l: unknown) => r ?? l]
-  );
+  return pipeWith(async (fn, res) => (isPromise(res) ? res.then((x) => compose(fn, x)).catch(() => res) : compose(fn, res)), [
+    ...fns.map((fn) => async (r: unknown, l: unknown) => fn(r, l)),
+    (r: unknown, l: unknown) => r ?? l,
+  ]);
 }
