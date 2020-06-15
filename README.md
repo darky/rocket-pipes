@@ -17,31 +17,81 @@ Powerful pipes for TypeScript, that chain Promise and ADT like Maybe or Either f
 
 ##### Basic
 
-https://github.com/darky/rocket-pipes/blob/2becf669d3ec78da0c3f1b9da2743f23840eb6fc/index.test.ts#L7-L11
+```ts
+const resp = await rocketPipe(
+  () => 123,
+  (n) => n + 1
+)();
+expect(resp + 1).toEqual(125);
+```
 
 ##### Exit pipeline
 
-https://github.com/darky/rocket-pipes/blob/2becf669d3ec78da0c3f1b9da2743f23840eb6fc/index.test.ts#L39-L44
+```ts
+const resp = await rocketPipe(
+  () => 123,
+  (n) => exitPipe(n + 1),
+  (n) => "qwe"
+)();
+expect(<number>resp + 1).toEqual(125);
+```
 
-##### Promise
+##### Promise basic
 
-https://github.com/darky/rocket-pipes/blob/2becf669d3ec78da0c3f1b9da2743f23840eb6fc/index.test.ts#L59-L63
+```ts
+const resp = await rocketPipe(
+  () => Promise.resolve(123),
+  (n) => n + 1
+)();
+expect(resp + 1).toEqual(125);
+```
 
 ##### Monet Either right
 
-https://github.com/darky/rocket-pipes/blob/2becf669d3ec78da0c3f1b9da2743f23840eb6fc/index.test.ts#L86-L90
+```ts
+const resp = await rocketPipe(
+  () => Either.right(123),
+  (n) => n + 1
+)();
+expect(resp + 1).toEqual(125);
+```
+
+##### Promise can include anything supported
+
+```ts
+const resp = await rocketPipe(
+  () => Promise.resolve(Either.right(123)),
+  (n) => n + 1
+)();
+expect(resp + 1).toEqual(125);
+```
 
 ##### Monet Either left
 
-https://github.com/darky/rocket-pipes/blob/2becf669d3ec78da0c3f1b9da2743f23840eb6fc/index.test.ts#L110-L114
+```ts
+const resp = await rocketPipe(
+  () => Either.left(123),
+  (_, l) => l + 1
+)();
+expect(resp + 1).toEqual(125);
+```
 
 ##### Monet Maybe some
 
-https://github.com/darky/rocket-pipes/blob/2becf669d3ec78da0c3f1b9da2743f23840eb6fc/index.test.ts#L128-L132
+```ts
+const resp = await rocketPipe(
+  () => Maybe.some(123),
+  (n) => n + 1
+)();
+expect(resp + 1).toEqual(125);
+```
 
 ##### Monet Maybe none
 
-https://github.com/darky/rocket-pipes/blob/2becf669d3ec78da0c3f1b9da2743f23840eb6fc/index.test.ts#L152-L156
-
-
-
+```ts
+const resp = await rocketPipe(
+  () => Maybe.none(),
+  (s, n) => s || n
+)();
+expect(resp).toEqual(void 0);
+```
