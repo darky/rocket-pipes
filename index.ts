@@ -1,4 +1,4 @@
-import type { Either, Catamorphism, Maybe } from "monet";
+import type { Either, Catamorphism, Maybe, Validation } from "monet";
 import isPromise from "p-is-promise";
 import pipeWith from "@ramda/pipewith";
 import type { Union } from "ts-toolbelt";
@@ -7,7 +7,7 @@ type Exists = boolean | string | number | bigint | symbol | void | null | object
 
 type ExitPipeReturnValue<T> = { x: T };
 
-type FnReturn<T, L, R> = Promise<Either<L, T> | Maybe<T> | ExitPipeReturnValue<R> | T> | Maybe<T> | ExitPipeReturnValue<R> | Either<L, T> | T;
+type FnReturn<T, L, R> = Promise<Either<L, T> | Maybe<T> | ExitPipeReturnValue<R> | Validation<L, T> | T> | Validation<L, T> | Maybe<T> | ExitPipeReturnValue<R> | Either<L, T> | T;
 
 const exitPipeReturnValues = new WeakSet();
 

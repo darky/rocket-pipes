@@ -1,5 +1,5 @@
 import { rocketPipe, exitPipe } from "./index";
-import { Either, Maybe } from "monet";
+import { Either, Maybe, Validation } from "monet";
 
 describe("Rocket pipes tests", () => {
   describe("Simple", () => {
@@ -173,6 +173,56 @@ describe("Rocket pipes tests", () => {
         (s, n) => s || n
       )();
       expect(resp).toEqual(void 0);
+    });
+  });
+
+  describe("Monet Validation", () => {
+    it("Validation success passthrough test", async () => {
+      const resp = await rocketPipe(
+        () => Validation.success(123),
+        (n) => n + 1
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("Validation success in promise passthrough test", async () => {
+      const resp = await rocketPipe(
+        () => Promise.resolve(Validation.success(123)),
+        (n) => n + 1
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("Validation success result test", async () => {
+      const resp = await rocketPipe(
+        () => Promise.resolve(Validation.success(123)),
+        (n) => Validation.success(n + 1)
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("Validation fail passthrough test", async () => {
+      const resp = await rocketPipe(
+        () => Validation.fail(123),
+        (_, l) => l + 1
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("Validation fail in promise passthrough test", async () => {
+      const resp = await rocketPipe(
+        () => Promise.resolve(Validation.fail(123)),
+        (_, l) => l + 1
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("Validation fail result test", async () => {
+      const resp = await rocketPipe(
+        () => Promise.resolve(Validation.fail(123)),
+        (_, l) => Validation.fail(l + 1)
+      )();
+      expect(resp + 1).toEqual(125);
     });
   });
 });
