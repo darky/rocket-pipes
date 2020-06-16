@@ -7,7 +7,7 @@ type Exists = boolean | string | number | bigint | symbol | void | null | object
 
 type ExitPipeReturnValue<T> = { x: T };
 
-type FnReturn<T, L, R> = Promise<Either<L, T>> | Promise<Maybe<T>> | Promise<ExitPipeReturnValue<R>> | Promise<T> | Maybe<T> | ExitPipeReturnValue<R> | Either<L, T> | T;
+type FnReturn<T, L, R> = Promise<Either<L, T> | Maybe<T> | ExitPipeReturnValue<R> | T> | Maybe<T> | ExitPipeReturnValue<R> | Either<L, T> | T;
 
 const exitPipeReturnValues = new WeakSet();
 

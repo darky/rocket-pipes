@@ -71,6 +71,17 @@ describe("Rocket pipes tests", () => {
         )()
       ).rejects.toEqual(123);
     });
+
+    it("Promise thenable test", async () => {
+      const resp = await rocketPipe(
+        () => {
+          const obj = { n: 123 };
+          return Promise.resolve().then(() => obj);
+        },
+        (obj) => obj.n + 1
+      )();
+      expect(resp + 1).toEqual(125);
+    });
   });
 
   describe("Monet Either", () => {
