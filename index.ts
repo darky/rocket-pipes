@@ -21,24 +21,22 @@ const exitPipeReturnValues = new WeakSet();
 
 const isExitPipeReturnValue = <T>(x: unknown): x is ExitPipeReturnValue<T> => exitPipeReturnValues.has(x as object);
 
-const isFoldable = <L, R>(x: unknown): x is Either<L, R> => x && typeof (x as Either<L, R>).fold === "function";
+const isMonetCata = <L, R>(x: unknown): x is Catamorphism<L, R> =>
+  x &&
+  typeof (x as Catamorphism<L, R>).cata === "function" &&
+  ((typeof (x as Either<L, R>).isLeft === "function" && typeof (x as Either<L, R>).isRight === "function") ||
+    (typeof (x as Maybe<R>).isSome === "function" && typeof (x as Maybe<R>).isNone === "function") ||
+    (typeof (x as Validation<L, R>).isSuccess === "function" && typeof (x as Validation<L, R>).isFail === "function"));
 
-const isCata = <L, R>(x: unknown): x is Catamorphism<L, R> => x && typeof (x as Catamorphism<L, R>).cata === "function";
-
-const isPurifyEither = <L, R>(x: unknown): x is PurifyEither<L, R> => x && typeof (x as PurifyEither<L, R>).either === "function";
+const isPurifyEither = <L, R>(x: unknown): x is PurifyEither<L, R> =>
+  x && typeof (x as PurifyEither<L, R>).either === "function" && typeof (x as PurifyEither<L, R>).isLeft === "function" && typeof (x as PurifyEither<L, R>).isRight === "function";
 
 const compose = (fn: Function, res: unknown) => {
   if (isExitPipeReturnValue(res)) {
     return res.x;
   }
-  if (isCata(res)) {
+  if (isMonetCata(res)) {
     return res.cata(
-      (l) => fn(null, l),
-      (r) => fn(r)
-    );
-  }
-  if (isFoldable(res)) {
-    return res.fold(
       (l) => fn(null, l),
       (r) => fn(r)
     );
