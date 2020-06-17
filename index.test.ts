@@ -1,5 +1,6 @@
 import { rocketPipe, exitPipe } from "./index";
 import { Either, Maybe, Validation } from "monet";
+import { Either as PurifyEither, Left as PurifyLeft } from "purify-ts";
 
 describe("Rocket pipes tests", () => {
   describe("Simple", () => {
@@ -221,6 +222,56 @@ describe("Rocket pipes tests", () => {
       const resp = await rocketPipe(
         () => Promise.resolve(Validation.fail(123)),
         (_, l) => Validation.fail(l + 1)
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+  });
+
+  describe("Purify TS Either", () => {
+    it("Either right passthrough test", async () => {
+      const resp = await rocketPipe(
+        () => PurifyEither.of(123),
+        (n) => n + 1
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("Either right in promise passthrough test", async () => {
+      const resp = await rocketPipe(
+        () => Promise.resolve(PurifyEither.of(123)),
+        (n) => n + 1
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("Either right result test", async () => {
+      const resp = await rocketPipe(
+        () => Promise.resolve(PurifyLeft(123)),
+        (_, l) => PurifyEither.of(l + 1)
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("Either left test", async () => {
+      const resp = await rocketPipe(
+        () => PurifyLeft(123),
+        (_, l) => l + 1
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("Either left in promise test", async () => {
+      const resp = await rocketPipe(
+        () => Promise.resolve(PurifyLeft(123)),
+        (_, l) => l + 1
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("Either left result test", async () => {
+      const resp = await rocketPipe(
+        () => Promise.resolve(PurifyLeft(123)),
+        (_, l) => PurifyLeft(l + 1)
       )();
       expect(resp + 1).toEqual(125);
     });

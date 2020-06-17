@@ -1,4 +1,5 @@
 import type { Either, Catamorphism, Maybe, Validation } from "monet";
+import { Either as PurifyEither } from "purify-ts";
 import isPromise from "p-is-promise";
 import pipeWith from "@ramda/pipewith";
 import type { Union } from "ts-toolbelt";
@@ -7,7 +8,14 @@ type Exists = boolean | string | number | bigint | symbol | void | null | object
 
 type ExitPipeReturnValue<T> = { x: T };
 
-type FnReturn<T, L, R> = Promise<Either<L, T> | Maybe<T> | ExitPipeReturnValue<R> | Validation<L, T> | T> | Validation<L, T> | Maybe<T> | ExitPipeReturnValue<R> | Either<L, T> | T;
+type FnReturn<T, L, R> =
+  | Promise<PurifyEither<L, T> | Either<L, T> | Maybe<T> | ExitPipeReturnValue<R> | Validation<L, T> | T>
+  | Validation<L, T>
+  | Maybe<T>
+  | ExitPipeReturnValue<R>
+  | Either<L, T>
+  | PurifyEither<L, T>
+  | T;
 
 const exitPipeReturnValues = new WeakSet();
 
@@ -16,6 +24,8 @@ const isExitPipeReturnValue = <T>(x: unknown): x is ExitPipeReturnValue<T> => ex
 const isFoldable = <L, R>(x: unknown): x is Either<L, R> => x && typeof (x as Either<L, R>).fold === "function";
 
 const isCata = <L, R>(x: unknown): x is Catamorphism<L, R> => x && typeof (x as Catamorphism<L, R>).cata === "function";
+
+const isPurifyEither = <L, R>(x: unknown): x is PurifyEither<L, R> => x && typeof (x as PurifyEither<L, R>).either === "function";
 
 const compose = (fn: Function, res: unknown) => {
   if (isExitPipeReturnValue(res)) {
@@ -29,6 +39,12 @@ const compose = (fn: Function, res: unknown) => {
   }
   if (isFoldable(res)) {
     return res.fold(
+      (l) => fn(null, l),
+      (r) => fn(r)
+    );
+  }
+  if (isPurifyEither(res)) {
+    return res.either(
       (l) => fn(null, l),
       (r) => fn(r)
     );
