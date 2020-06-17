@@ -95,3 +95,23 @@ const resp = await rocketPipe(
 )();
 expect(resp).toEqual(void 0);
 ```
+
+##### Monet Validation success
+
+```ts
+const resp = await rocketPipe(
+  () => Validation.success(123),
+  (n) => n + 1
+)();
+expect(resp + 1).toEqual(125);
+```
+
+##### Monet Validation fail
+
+```ts
+const resp = await rocketPipe(
+  () => Validation.fail(123),
+  (_, l) => l + 1
+)();
+expect(resp + 1).toEqual(125);
+```
