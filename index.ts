@@ -1,5 +1,5 @@
 import type { Either, Catamorphism, Maybe, Validation } from "monet";
-import { Either as PurifyEither } from "purify-ts";
+import { Either as PurifyEither, Maybe as PurifyMaybe } from "purify-ts";
 import isPromise from "p-is-promise";
 import pipeWith from "@ramda/pipewith";
 import type { Union } from "ts-toolbelt";
@@ -9,7 +9,8 @@ type Exists = boolean | string | number | bigint | symbol | void | null | object
 type ExitPipeReturnValue<T> = { x: T };
 
 type FnReturn<T, L, R> =
-  | Promise<PurifyEither<L, T> | Either<L, T> | Maybe<T> | ExitPipeReturnValue<R> | Validation<L, T> | T>
+  | Promise<PurifyEither<L, T> | PurifyMaybe<T> | Either<L, T> | Maybe<T> | ExitPipeReturnValue<R> | Validation<L, T> | T>
+  | PurifyMaybe<T>
   | Validation<L, T>
   | Maybe<T>
   | ExitPipeReturnValue<R>
@@ -31,6 +32,9 @@ const isMonetCata = <L, R>(x: unknown): x is Catamorphism<L, R> =>
 const isPurifyEither = <L, R>(x: unknown): x is PurifyEither<L, R> =>
   x && typeof (x as PurifyEither<L, R>).either === "function" && typeof (x as PurifyEither<L, R>).isLeft === "function" && typeof (x as PurifyEither<L, R>).isRight === "function";
 
+const isPurifyMaybe = <T>(x: unknown): x is PurifyMaybe<T> =>
+  x && typeof (x as PurifyMaybe<T>).caseOf === "function" && typeof (x as PurifyMaybe<T>).isJust === "function" && typeof (x as PurifyMaybe<T>).isNothing === "function";
+
 const compose = (fn: Function, res: unknown) => {
   if (isExitPipeReturnValue(res)) {
     return res.x;
@@ -46,6 +50,12 @@ const compose = (fn: Function, res: unknown) => {
       (l) => fn(null, l),
       (r) => fn(r)
     );
+  }
+  if (isPurifyMaybe(res)) {
+    return res.caseOf({
+      Just: (x) => fn(x),
+      Nothing: () => fn(null),
+    });
   }
   return fn(res);
 };
