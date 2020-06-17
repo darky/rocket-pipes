@@ -2,6 +2,7 @@ import { rocketPipe, exitPipe } from "./index";
 import { Either, Maybe, Validation } from "monet";
 import { Either as PurifyEither, Left as PurifyLeft, Maybe as PurifyMaybe } from "purify-ts";
 import * as R from "ramda";
+import Bluebird from "bluebird";
 
 describe("Rocket pipes tests", () => {
   describe("Simple", () => {
@@ -334,6 +335,44 @@ describe("Rocket pipes tests", () => {
         )
       ) as () => Promise<number>;
       const resp = await fn();
+      expect(resp + 1).toEqual(125);
+    });
+  });
+
+  describe("Bluebird", () => {
+    it("Bluebird passthrough test", async () => {
+      const resp = await rocketPipe(
+        () => Bluebird.resolve(123),
+        (n) => n + 1
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("Bluebird reject test", async () => {
+      expect(
+        rocketPipe(
+          () => Bluebird.reject(123),
+          (n) => "qwe"
+        )()
+      ).rejects.toEqual(123);
+    });
+
+    it("Bluebird thenable test", async () => {
+      const resp = await rocketPipe(
+        () => {
+          const obj = { n: 123 };
+          return Bluebird.resolve().then(() => obj);
+        },
+        (obj) => obj.n + 1
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("Either right in Bluebird passthrough test", async () => {
+      const resp = await rocketPipe(
+        () => Bluebird.resolve(Either.right(123)),
+        (n) => n + 1
+      )();
       expect(resp + 1).toEqual(125);
     });
   });
