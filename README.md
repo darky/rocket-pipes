@@ -14,6 +14,8 @@ Powerful pipes for TypeScript, that chain Promise and ADT like Maybe or Either f
 
 ### Library support
 
+<!-- EitherAsync -->
+
 | Vanilla | Monet                 | Purify            |
 |---------|-----------------------|-------------------|
 | Promise | Either                | Either            |

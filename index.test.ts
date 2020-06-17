@@ -1,6 +1,6 @@
 import { rocketPipe, exitPipe } from "./index";
 import { Either, Maybe, Validation } from "monet";
-import { Either as PurifyEither, Left as PurifyLeft, Maybe as PurifyMaybe } from "purify-ts";
+import { Either as PurifyEither, Left as PurifyLeft, Maybe as PurifyMaybe, EitherAsync } from "purify-ts";
 import * as R from "ramda";
 
 describe("Rocket pipes tests", () => {
@@ -228,7 +228,7 @@ describe("Rocket pipes tests", () => {
     });
   });
 
-  describe("Purify TS Either", () => {
+  describe("Purify Either", () => {
     it("Either right passthrough test", async () => {
       const resp = await rocketPipe(
         () => PurifyEither.of(123),
@@ -317,6 +317,74 @@ describe("Rocket pipes tests", () => {
         (s, n) => s || n
       )();
       expect(resp).toEqual(void 0);
+    });
+  });
+
+  describe("Purify EitherAsync", () => {
+    it("EitherAsync right passthrough test", async () => {
+      const resp = await rocketPipe(
+        () => EitherAsync(() => Promise.resolve(123)),
+        (n) => n + 1
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("EitherAsync right in promise passthrough test", async () => {
+      const resp = await rocketPipe(
+        () => Promise.resolve(EitherAsync(() => Promise.resolve(123))),
+        (n) => n + 1
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("EitherAsync right result test", async () => {
+      const resp = await rocketPipe(
+        () =>
+          Promise.resolve(
+            EitherAsync<number, unknown>(({ liftEither }) => liftEither(PurifyLeft(123)))
+          ),
+        (_, l) => PurifyEither.of(l + 1)
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("EitherAsync left test", async () => {
+      const resp = await rocketPipe(
+        () => EitherAsync<number, unknown>(({ liftEither }) => liftEither(PurifyLeft(123))),
+        (_, l) => l + 1
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("EitherAsync left in promise test", async () => {
+      const resp = await rocketPipe(
+        () =>
+          Promise.resolve(
+            EitherAsync<number, unknown>(({ liftEither }) => liftEither(PurifyLeft(123)))
+          ),
+        (_, l) => l + 1
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("EitherAsync left result test", async () => {
+      const resp = await rocketPipe(
+        () =>
+          Promise.resolve(
+            EitherAsync<number, unknown>(({ liftEither }) => liftEither(PurifyLeft(123)))
+          ),
+        (_, l) => EitherAsync<number, unknown>(({ liftEither }) => liftEither(PurifyLeft(l + 1)))
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("EitherAsync error test", async () => {
+      expect(
+        rocketPipe(
+          async () => EitherAsync(() => Promise.reject("qwe")),
+          (n) => n + 1
+        )()
+      ).rejects.toEqual("qwe");
     });
   });
 
