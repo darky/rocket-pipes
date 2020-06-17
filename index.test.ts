@@ -1,6 +1,7 @@
 import { rocketPipe, exitPipe } from "./index";
 import { Either, Maybe, Validation } from "monet";
 import { Either as PurifyEither, Left as PurifyLeft } from "purify-ts";
+import * as R from "ramda";
 
 describe("Rocket pipes tests", () => {
   describe("Simple", () => {
@@ -273,6 +274,24 @@ describe("Rocket pipes tests", () => {
         () => Promise.resolve(PurifyLeft(123)),
         (_, l) => PurifyLeft(l + 1)
       )();
+      expect(resp + 1).toEqual(125);
+    });
+  });
+
+  describe("Ramda", () => {
+    it("Ramda ifElse", async () => {
+      const fn = R.ifElse(
+        () => true,
+        rocketPipe(
+          () => Promise.resolve(123),
+          (n) => n + 1
+        ),
+        rocketPipe(
+          () => Promise.resolve(123),
+          (n) => n + 1
+        )
+      ) as () => Promise<number>;
+      const resp = await fn();
       expect(resp + 1).toEqual(125);
     });
   });
