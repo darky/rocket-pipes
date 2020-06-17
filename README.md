@@ -14,14 +14,14 @@ Powerful pipes for TypeScript, that chain Promise and ADT like Maybe or Either f
 
 ### Library support
 
-| Vanilla | Monet               | Purify          |
-|---------|---------------------|-----------------|
-| Promise | Either              | Either          |
-|         | Maybe               | Promise<Either> |
-|         | Validation          |                 |
-|         | Promise<Either>     |                 |
-|         | Promise<Maybe>      |                 |
-|         | Promise<Validation> |                 |
+| Vanilla | Monet                 | Purify            |
+|---------|-----------------------|-------------------|
+| Promise | Either                | Either            |
+|         | Maybe                 | Promise\<Either\> |
+|         | Validation            |                   |
+|         | Promise\<Either\>     |                   |
+|         | Promise\<Maybe\>      |                   |
+|         | Promise\<Validation\> |                   |
 
 ### Examples
 
