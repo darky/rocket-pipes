@@ -13,6 +13,14 @@ Powerful pipes for TypeScript, that chain Promise and ADT like Maybe or Either f
 * 🏓 Errors as rejected promises. You decide what need throw or handle.
 * 🦥 Lazy. Pipeline returns function, that can be used later. It's friendly with Ramda or Sanctuary.
 
+### Library support
+
+| Vanilla | Monet      | Purify |
+|---------|------------|--------|
+| Promise | Either     | Either |
+|         | Maybe      |        |
+|         | Validation |        |
+
 ### Examples
 
 ##### Basic
@@ -46,7 +54,7 @@ const resp = await rocketPipe(
 expect(resp + 1).toEqual(125);
 ```
 
-##### Monet Either right
+##### Either right
 
 ```ts
 const resp = await rocketPipe(
@@ -66,7 +74,7 @@ const resp = await rocketPipe(
 expect(resp + 1).toEqual(125);
 ```
 
-##### Monet Either left
+##### Either left
 
 ```ts
 const resp = await rocketPipe(
@@ -76,7 +84,7 @@ const resp = await rocketPipe(
 expect(resp + 1).toEqual(125);
 ```
 
-##### Monet Maybe some
+##### Maybe some
 
 ```ts
 const resp = await rocketPipe(
@@ -86,7 +94,7 @@ const resp = await rocketPipe(
 expect(resp + 1).toEqual(125);
 ```
 
-##### Monet Maybe none
+##### Maybe none
 
 ```ts
 const resp = await rocketPipe(
@@ -96,7 +104,7 @@ const resp = await rocketPipe(
 expect(resp).toEqual(void 0);
 ```
 
-##### Monet Validation success
+##### Validation success
 
 ```ts
 const resp = await rocketPipe(
@@ -106,7 +114,7 @@ const resp = await rocketPipe(
 expect(resp + 1).toEqual(125);
 ```
 
-##### Monet Validation fail
+##### Validation fail
 
 ```ts
 const resp = await rocketPipe(
