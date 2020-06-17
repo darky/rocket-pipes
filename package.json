@@ -1,6 +1,6 @@
 {
   "name": "rocket-pipes",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Powerful pipes for TypeScript, that chain Promise and ADT for you",
   "repository": {
     "type": "git",
