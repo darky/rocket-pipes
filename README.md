@@ -1,13 +1,12 @@
 # Rocket pipes
 
-Powerful pipes for TypeScript, that chain Promise and ADT like Maybe or Either from popular FP libraries
-(currently tested Monet only)
+Powerful pipes for TypeScript, that chain Promise and ADT like Maybe or Either from popular FP libraries.
 
 ### Features
 
 * 🍬 Sugar pipes. No worries about promises or ADT itself. Work with resolved values directly.
 * 💡 Type inference. No worries about manual typing work. Types of resolved values inferred automatically.
-* ⛓️ FP libraries friendly. Understand Catamorphism/Foldable libraries (currently type coverage of Monet only)
+* ⛓️ FP libraries friendly. Understand Catamorphism/Foldable libraries.
 * 🖇️ Mix of Promise with FP library. Yes! Catamorphism/Foldable can be included in Promise.
 * 🚪 Pipeline exit. You can exit from any place of pipeline with result value (it's also have proper type inference 🤘)
 * 🏓 Errors as rejected promises. You decide what need throw or handle.
@@ -15,11 +14,14 @@ Powerful pipes for TypeScript, that chain Promise and ADT like Maybe or Either f
 
 ### Library support
 
-| Vanilla | Monet      | Purify |
-|---------|------------|--------|
-| Promise | Either     | Either |
-|         | Maybe      |        |
-|         | Validation |        |
+| Vanilla | Monet               | Purify          |
+|---------|---------------------|-----------------|
+| Promise | Either              | Either          |
+|         | Maybe               | Promise<Either> |
+|         | Validation          |                 |
+|         | Promise<Either>     |                 |
+|         | Promise<Maybe>      |                 |
+|         | Promise<Validation> |                 |
 
 ### Examples
 
