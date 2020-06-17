@@ -52,10 +52,8 @@
     "ts-toolbelt": "6.9.4"
   },
   "devDependencies": {
-    "@types/bluebird": "3.5.32",
     "@types/jest": "26.0.0",
     "@types/ramda": "0.27.6",
-    "bluebird": "3.7.2",
     "jest": "26.0.1",
     "ramda": "0.27.0",
     "rimraf": "3.0.2",
