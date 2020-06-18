@@ -54,6 +54,15 @@ describe("Rocket pipes tests", () => {
       )();
       expect(<number>resp + 1).toEqual(125);
     });
+
+    it("Replace fn on the fly", async () => {
+      const fn = rocketPipe(
+        () => 123,
+        (n) => n + 1
+      );
+      const resp = await fn.replace([[0, () => 124]])();
+      expect(resp + 1).toEqual(126);
+    });
   });
 
   describe("Promise", () => {
