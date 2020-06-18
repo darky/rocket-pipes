@@ -9,21 +9,22 @@ Powerful pipes for TypeScript, that chain Promise and ADT like Maybe or Either f
 * ⛓️ FP libraries friendly. Understand Catamorphism/Foldable libraries.
 * 🖇️ Mix of Promise with FP library. Yes! Catamorphism/Foldable can be included in Promise.
 * 🚪 Pipeline exit. You can exit from any place of pipeline with result value (it's also have proper type inference 🤘)
+* 🏹 Pipeline replace. You can replace function on pipeline to another on the fly. Useful for mock testing.
 * 🏓 Errors as rejected promises. You decide what need throw or handle.
 * 🦥 Lazy. Pipeline returns function, that can be used later. It's friendly with Ramda or Sanctuary.
 
 ### Library support
 
-<!-- EitherAsync, MaybeAsync -->
-
-| Vanilla | Monet                 | Purify            |
-|---------|-----------------------|-------------------|
-| Promise | Either                | Either            |
-|         | Maybe                 | Maybe             |
-|         | Validation            | Promise\<Either\> |
-|         | Promise\<Either\>     | Promise\<Maybe\>  |
-|         | Promise\<Maybe\>      |                   |
-|         | Promise\<Validation\> |                   |
+| Vanilla | Monet                 | Purify                 |
+|---------|-----------------------|------------------------|
+| Promise | Either                | Either                 |
+|         | Maybe                 | Maybe                  |
+|         | Validation            | EitherAsync            |
+|         | Promise\<Either\>     | MaybeAsync             |
+|         | Promise\<Maybe\>      | Promise\<Either\>      |
+|         | Promise\<Validation\> | Promise\<Maybe\>       |
+|         |                       | Promise\<EitherAsync\> |
+|         |                       | Promise\<MaybeAsync\>  |
 
 ### Examples
 
@@ -46,6 +47,17 @@ const resp = await rocketPipe(
   (n) => "qwe"
 )();
 expect(<number>resp + 1).toEqual(125);
+```
+
+##### Replace pipeline
+
+```ts
+const fn = rocketPipe(
+  () => 123,
+  (n) => n + 1
+);
+const resp = await fn.replace([[0, () => 124]])();
+expect(resp + 1).toEqual(126);
 ```
 
 ##### Promise basic
