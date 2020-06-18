@@ -1,6 +1,6 @@
 import { rocketPipe, exitPipe } from "./index";
 import { Either, Maybe, Validation } from "monet";
-import { Either as PurifyEither, Left as PurifyLeft, Maybe as PurifyMaybe, EitherAsync } from "purify-ts";
+import { Either as PurifyEither, Left as PurifyLeft, Maybe as PurifyMaybe, EitherAsync, MaybeAsync } from "purify-ts";
 import * as R from "ramda";
 
 describe("Rocket pipes tests", () => {
@@ -385,6 +385,48 @@ describe("Rocket pipes tests", () => {
           (n) => n + 1
         )()
       ).rejects.toEqual("qwe");
+    });
+  });
+
+  describe("Purify MaybeAsync", () => {
+    it("MaybeAsync some passthrough test", async () => {
+      const resp = await rocketPipe(
+        () => MaybeAsync(() => Promise.resolve(123)),
+        (n) => n + 1
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("MaybeAsync some in promise passthrough test", async () => {
+      const resp = await rocketPipe(
+        () => Promise.resolve(MaybeAsync(() => Promise.resolve(123))),
+        (n) => n + 1
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("MaybeAsync some result test", async () => {
+      const resp = await rocketPipe(
+        () => Promise.resolve(MaybeAsync(() => Promise.resolve(123))),
+        (n) => MaybeAsync(() => Promise.resolve(n + 1))
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("MaybeAsync none passthrough and result test", async () => {
+      const resp = await rocketPipe(
+        () => MaybeAsync(({ liftMaybe }) => liftMaybe(PurifyMaybe.zero())),
+        (s, n) => s || n
+      )();
+      expect(resp).toEqual(void 0);
+    });
+
+    it("MaybeAsync none passthrough in promise test", async () => {
+      const resp = await rocketPipe(
+        () => Promise.resolve(MaybeAsync(({ liftMaybe }) => liftMaybe(PurifyMaybe.zero()))),
+        (s, n) => s || n
+      )();
+      expect(resp).toEqual(void 0);
     });
   });
 

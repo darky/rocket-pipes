@@ -1,5 +1,5 @@
 import type { Either, Catamorphism, Maybe, Validation } from "monet";
-import { Either as PurifyEither, Maybe as PurifyMaybe, EitherAsync } from "purify-ts";
+import { Either as PurifyEither, Maybe as PurifyMaybe, EitherAsync, MaybeAsync } from "purify-ts";
 import isPromise from "p-is-promise";
 import pipeWith from "@ramda/pipewith";
 import type { Union } from "ts-toolbelt";
@@ -9,7 +9,8 @@ type Exists = boolean | string | number | bigint | symbol | void | null | object
 type ExitPipeReturnValue<T> = { x: T };
 
 type FnReturn<T, L, R> =
-  | Promise<EitherAsync<L, T> | PurifyEither<L, T> | PurifyMaybe<T> | Either<L, T> | Maybe<T> | ExitPipeReturnValue<R> | Validation<L, T> | T>
+  | Promise<MaybeAsync<T> | EitherAsync<L, T> | PurifyEither<L, T> | PurifyMaybe<T> | Either<L, T> | Maybe<T> | ExitPipeReturnValue<R> | Validation<L, T> | T>
+  | MaybeAsync<T>
   | EitherAsync<L, T>
   | PurifyMaybe<T>
   | Validation<L, T>
@@ -42,6 +43,9 @@ const isPurifyEitherAsync = <L, R>(x: unknown): x is EitherAsync<L, R> =>
   typeof (x as EitherAsync<L, R>).run === "function" &&
   typeof (x as EitherAsync<L, R>).chainLeft === "function";
 
+const isPurifyMaybeAsync = <T>(x: unknown): x is MaybeAsync<T> =>
+  x && typeof (x as MaybeAsync<T>).toEitherAsync === "function" && typeof (x as MaybeAsync<T>).run === "function" && typeof (x as MaybeAsync<T>).chain === "function";
+
 const compose = (fn: Function, res: unknown): unknown => {
   if (isExitPipeReturnValue(res)) {
     return res.x;
@@ -64,8 +68,8 @@ const compose = (fn: Function, res: unknown): unknown => {
       Nothing: () => fn(null),
     });
   }
-  if (isPurifyEitherAsync(res)) {
-    const promise = res.run();
+  if (isPurifyEitherAsync(res) || isPurifyMaybeAsync(res)) {
+    const promise: Promise<unknown> = res.run();
     return promise.then((x) => compose(fn, x)).catch(() => promise);
   }
   return fn(res);
