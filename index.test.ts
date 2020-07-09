@@ -34,6 +34,14 @@ describe("Rocket pipes tests", () => {
         )()
       ).rejects.toEqual("qwe");
     });
+
+    it("Pass argument test", async () => {
+      const resp = await rocketPipe(
+        (n: number) => n + 1,
+        (n) => n + 1
+      )(123);
+      expect(resp + 1).toEqual(126);
+    });
   });
 
   describe("Utils", () => {
