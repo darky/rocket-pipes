@@ -22,45 +22,60 @@ type FnReturn<T, L, R> =
 
 type PipeReturn1<FnResult, F1> = FnResult & {
   replace: (r: [0, F1][]) => FnResult;
+  label: (label: string) => FnResult;
 };
 
 type PipeReturn2<FnResult, F1, F2> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2]>) => FnResult;
+  label: (label: string) => FnResult;
 };
 
 type PipeReturn3<FnResult, F1, F2, F3> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3]>) => FnResult;
+  label: (label: string) => FnResult;
 };
 
 type PipeReturn4<FnResult, F1, F2, F3, F4> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3] | [3, F4]>) => FnResult;
+  label: (label: string) => FnResult;
 };
 
 type PipeReturn5<FnResult, F1, F2, F3, F4, F5> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3] | [3, F4] | [4, F5]>) => FnResult;
+  label: (label: string) => FnResult;
 };
 
 type PipeReturn6<FnResult, F1, F2, F3, F4, F5, F6> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3] | [3, F4] | [4, F5] | [5, F6]>) => FnResult;
+  label: (label: string) => FnResult;
 };
 
 type PipeReturn7<FnResult, F1, F2, F3, F4, F5, F6, F7> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3] | [3, F4] | [4, F5] | [5, F6] | [6, F7]>) => FnResult;
+  label: (label: string) => FnResult;
 };
 
 type PipeReturn8<FnResult, F1, F2, F3, F4, F5, F6, F7, F8> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3] | [3, F4] | [4, F5] | [5, F6] | [6, F7] | [7, F8]>) => FnResult;
+  label: (label: string) => FnResult;
 };
 
 type PipeReturn9<FnResult, F1, F2, F3, F4, F5, F6, F7, F8, F9> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3] | [3, F4] | [4, F5] | [5, F6] | [6, F7] | [7, F8] | [8, F9]>) => FnResult;
+  label: (label: string) => FnResult;
 };
 
 type PipeReturn10<FnResult, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3] | [3, F4] | [4, F5] | [5, F6] | [6, F7] | [7, F8] | [8, F9] | [9, F10]>) => FnResult;
+  label: (label: string) => FnResult;
 };
 
+type AopCallback = (label: string, ...args: unknown[]) => unknown;
+
 const exitPipeReturnValues = new WeakSet();
+const beforeAllFns = new Set<AopCallback>();
+const afterAllFns = new Set<AopCallback>();
+const labelsFns = new WeakMap<object, string>();
 
 const isExitPipeReturnValue = <T>(x: unknown): x is ExitPipeReturnValue<T> => exitPipeReturnValues.has(x as object);
 
@@ -119,6 +134,22 @@ export function exitPipe<T>(x: T) {
   const exitPipeReturnValue: ExitPipeReturnValue<T> = { x };
   exitPipeReturnValues.add(exitPipeReturnValue);
   return exitPipeReturnValue;
+}
+
+export function beforeAll(fn: AopCallback) {
+  beforeAllFns.add(fn);
+}
+
+export function afterAll(fn: AopCallback) {
+  afterAllFns.add(fn);
+}
+
+export function clearBeforeAll() {
+  beforeAllFns.clear();
+}
+
+export function clearAfterAll() {
+  afterAllFns.clear();
 }
 
 export function rocketPipe<T1, L1, R1>(fn0: () => FnReturn<T1, L1, R1>): PipeReturn1<() => Promise<Union.Select<R1 | L1 | T1, Exists, "extends->">>, typeof fn0>;
@@ -628,14 +659,25 @@ export function rocketPipe<V0, V1, V2, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, 
 
 export function rocketPipe(...functions: Array<Function>): (...args: unknown[]) => unknown {
   const fns = Array.from(functions);
-  const fn = (...args: unknown[]) =>
-    pipeWith(async (fn, res) => (isPromise(res) ? res.then((x) => compose(fn, x)).catch(() => res) : compose(fn, res)), [
+
+  const fn = async (...args: unknown[]) => {
+    await Promise.all(Array.from(beforeAllFns.values()).map((f) => f(labelsFns.get(fn) || "unknown", ...args)));
+    return pipeWith(async (fn, res) => (isPromise(res) ? res.then((x) => compose(fn, x)).catch(() => res) : compose(fn, res)), [
       ...fns.map((fn) => async (r: unknown, l: unknown) => fn(r, l)),
       (r: unknown, l: unknown) => r ?? l,
+      (resp: unknown) => Promise.all(Array.from(afterAllFns.values()).map((f) => f(labelsFns.get(fn) || "unknown", resp))).then(() => resp),
     ])(...args);
+  };
+
   fn.replace = (replacements: Array<[number, Function]>) => {
     replacements.forEach(([i, fn]) => (fns[i] = fn));
     return fn;
   };
+
+  fn.label = (label: string) => {
+    labelsFns.set(fn, label);
+    return fn;
+  };
+
   return fn;
 }

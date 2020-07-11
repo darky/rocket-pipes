@@ -1,4 +1,4 @@
-import { rocketPipe, exitPipe } from "./index";
+import { rocketPipe, exitPipe, clearAfterAll, clearBeforeAll, beforeAll as ba, afterAll as aa } from "./index";
 import { Either, Maybe, Validation } from "monet";
 import { Either as PurifyEither, Left as PurifyLeft, Maybe as PurifyMaybe, EitherAsync, MaybeAsync } from "purify-ts";
 import * as R from "ramda";
@@ -100,6 +100,61 @@ describe("Rocket pipes tests", () => {
         (obj) => obj.n + 1
       )();
       expect(resp + 1).toEqual(125);
+    });
+  });
+
+  describe("AOP", () => {
+    afterEach(() => {
+      clearAfterAll();
+      clearBeforeAll();
+    });
+
+    it("beforeAll unknown label", (cb) => {
+      ba((label, n) => {
+        expect(label).toEqual("unknown");
+        expect(n).toEqual(123);
+        cb();
+      });
+      rocketPipe(
+        (n: number) => n + 1,
+        (n) => n + 1
+      )(123);
+    });
+
+    it("afterAll unknown label", (cb) => {
+      aa((label, n) => {
+        expect(label).toEqual("unknown");
+        expect(n).toEqual(125);
+        cb();
+      });
+      rocketPipe(
+        (n: number) => n + 1,
+        (n) => n + 1
+      )(123);
+    });
+
+    it("beforeAll label", (cb) => {
+      ba((label, n) => {
+        expect(label).toEqual("test");
+        expect(n).toEqual(123);
+        cb();
+      });
+      rocketPipe(
+        (n: number) => n + 1,
+        (n) => n + 1
+      ).label("test")(123);
+    });
+
+    it("afterAll label", (cb) => {
+      aa((label, n) => {
+        expect(label).toEqual("test");
+        expect(n).toEqual(125);
+        cb();
+      });
+      rocketPipe(
+        (n: number) => n + 1,
+        (n) => n + 1
+      ).label("test")(123);
     });
   });
 
