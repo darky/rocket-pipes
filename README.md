@@ -71,7 +71,6 @@ beforeAll((label, n) => {
 afterAll((label, n) => {
   expect(label).toEqual("test");
   expect(n).toEqual(125);
-  cb();
 });
 rocketPipe(
   (n: number) => n + 1,
