@@ -206,6 +206,17 @@ describe("Rocket pipes tests", () => {
       )();
       expect(resp + 1).toEqual(125);
     });
+
+    it("Either right default array", async () => {
+      const resp = await rocketPipe(
+        () => Either.fromPromise(Promise.all([
+          Promise.resolve(123),
+          Promise.reject<string>('qwe')
+        ])),
+        (arr = <[number, string]>[0, ''], l) => arr[0]
+      )();
+      expect(resp + 1).toEqual(1);
+    });
   });
 
   describe("Monet Maybe", () => {

@@ -107,20 +107,20 @@ const compose = (fn: Function, res: unknown): unknown => {
   }
   if (isMonetCata(res)) {
     return res.cata(
-      (l) => fn(null, l),
+      (l) => fn(void 0, l),
       (r) => fn(r)
     );
   }
   if (isPurifyEither(res)) {
     return res.either(
-      (l) => fn(null, l),
+      (l) => fn(void 0, l),
       (r) => fn(r)
     );
   }
   if (isPurifyMaybe(res)) {
     return res.caseOf({
       Just: (x) => fn(x),
-      Nothing: () => fn(null),
+      Nothing: () => fn(void 0),
     });
   }
   if (isPurifyEitherAsync(res) || isPurifyMaybeAsync(res)) {
