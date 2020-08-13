@@ -71,6 +71,18 @@ describe("Rocket pipes tests", () => {
       const resp = await fn.replace([[0, () => 124]])();
       expect(resp + 1).toEqual(126);
     });
+
+    it.skip("Nested exit", async () => {
+      const resp = await rocketPipe(
+        () => 123,
+        rocketPipe(
+          (n: number) => n + 1,
+          n => exitPipe(n + 1)
+        ),
+        (n) => "qwe"
+      )();
+      expect(<number>resp + 1).toEqual(126);
+    });
   });
 
   describe("Promise", () => {
