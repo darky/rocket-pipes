@@ -8,7 +8,7 @@ Powerful pipes for TypeScript, that chain Promise and ADT like Maybe or Either f
 - 💡 Type inference. No worries about manual typing work. Types of resolved values inferred automatically.
 - ⛓️ FP libraries friendly. Understand Catamorphism/Foldable libraries.
 - 🖇️ Mix of Promise with FP library. Yes! Catamorphism/Foldable can be included in Promise.
-- 🚪 Pipeline exit. You can exit from any place of pipeline with result value (it's also have proper type inference 🤘)
+- 🚪 Pipeline exit (even nested exit). You can exit from any place of pipeline with result value (it's also have proper type inference 🤘)
 - 🏹 Pipeline replace. You can replace function on pipeline to another on the fly. Useful for mock testing.
 - ➰ AOP. Use beforeAll/afterAll hooks for your pipelines.
 - 🏓 Errors as rejected promises. You decide what need throw or handle.
@@ -47,7 +47,7 @@ const resp = await rocketPipe(
   (n) => exitPipe(n + 1),
   (n) => "qwe"
 )();
-expect(<number>resp + 1).toEqual(125);
+isExitPipeValue(resp) && expect(resp.r + 1).toEqual(125);
 ```
 
 ##### Replace pipeline
