@@ -1,4 +1,4 @@
-import { rocketPipe, exitPipe, clearAfterAll, clearBeforeAll, beforeAll as ba, afterAll as aa } from "./index";
+import { rocketPipe, exitPipe, clearAfterAll, clearBeforeAll, beforeAll as ba, afterAll as aa, isExitPipeValue } from "./index";
 import { Either, Maybe, Validation } from "monet";
 import { Either as PurifyEither, Left as PurifyLeft, Maybe as PurifyMaybe, EitherAsync, MaybeAsync } from "purify-ts";
 import * as R from "ramda";
@@ -51,7 +51,10 @@ describe("Rocket pipes tests", () => {
         (n) => exitPipe(n + 1),
         (n) => "qwe"
       )();
-      expect(<number>resp + 1).toEqual(125);
+      expect(isExitPipeValue(resp)).toEqual(true);
+      if (isExitPipeValue(resp)) {
+        expect(resp.r + 1).toEqual(125)
+      }
     });
 
     it("Exit promise pipeline", async () => {
@@ -60,7 +63,42 @@ describe("Rocket pipes tests", () => {
         (n) => Promise.resolve(exitPipe(n + 1)),
         (n) => "qwe"
       )();
-      expect(<number>resp + 1).toEqual(125);
+      expect(isExitPipeValue(resp)).toEqual(true);
+      if (isExitPipeValue(resp)) {
+        expect(resp.r + 1).toEqual(125)
+      }
+    });
+
+    it("Nested exit", async () => {
+      const resp = await rocketPipe(
+        () => 123,
+        rocketPipe(
+          (n: number) => n + 1,
+          n => exitPipe(n + 1),
+          () => true,
+        ),
+        (n) => "qwe"
+      )();
+      expect(isExitPipeValue(resp)).toEqual(true);
+      if (isExitPipeValue(resp)) {
+        expect(resp.r + 1).toEqual(126)
+      }
+    });
+
+    it("Nested promise exit", async () => {
+      const resp = await rocketPipe(
+        () => 123,
+        rocketPipe(
+          (n: number) => n + 1,
+          n => Promise.resolve(exitPipe(n + 1)),
+          () => true,
+        ),
+        (n) => "qwe"
+      )();
+      expect(isExitPipeValue(resp)).toEqual(true);
+      if (isExitPipeValue(resp)) {
+        expect(resp.r + 1).toEqual(126)
+      }
     });
 
     it("Replace fn on the fly", async () => {
@@ -70,18 +108,6 @@ describe("Rocket pipes tests", () => {
       );
       const resp = await fn.replace([[0, () => 124]])();
       expect(resp + 1).toEqual(126);
-    });
-
-    it.skip("Nested exit", async () => {
-      const resp = await rocketPipe(
-        () => 123,
-        rocketPipe(
-          (n: number) => n + 1,
-          n => exitPipe(n + 1)
-        ),
-        (n) => "qwe"
-      )();
-      expect(<number>resp + 1).toEqual(126);
     });
   });
 
