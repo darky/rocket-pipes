@@ -49,15 +49,15 @@
     "monet": "0.9.1",
     "p-is-promise": "3.0.0",
     "purify-ts": "0.15.1",
-    "ts-toolbelt": "6.13.35"
+    "ts-toolbelt": "6.15.5"
   },
   "devDependencies": {
-    "@types/jest": "26.0.7",
-    "@types/ramda": "0.27.13",
-    "jest": "26.1.0",
-    "ramda": "0.27.0",
+    "@types/jest": "26.0.9",
+    "@types/ramda": "0.27.14",
+    "jest": "26.4.0",
+    "ramda": "0.27.1",
     "rimraf": "3.0.2",
-    "ts-jest": "26.1.4",
+    "ts-jest": "26.2.0",
     "typescript": "3.9.7"
   }
 }
