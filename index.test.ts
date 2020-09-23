@@ -1,4 +1,4 @@
-import { rocketPipe, exitPipe, clearAfterAll, clearBeforeAll, beforeAll as ba, afterAll as aa, isExitPipeValue } from "./index";
+import { rocketPipe, exitPipe, clearAfterAll, clearBeforeAll, beforeAll as ba, afterAll as aa, isExitPipeValue, p, ep, iep } from "./index";
 import { Either, Maybe, Validation } from "monet";
 import { Either as PurifyEither, Left as PurifyLeft, Maybe as PurifyMaybe, EitherAsync, MaybeAsync } from "purify-ts";
 import * as R from "ramda";
@@ -566,6 +566,28 @@ describe("Rocket pipes tests", () => {
       ) as () => Promise<number>;
       const resp = await fn();
       expect(resp + 1).toEqual(125);
+    });
+  });
+
+  describe('Aliases', () => {
+    it("Simple passthrough test", async () => {
+      const resp = await p(
+        () => 123,
+        (n) => n + 1
+      )();
+      expect(resp + 1).toEqual(125);
+    });
+
+    it("Exit pipeline", async () => {
+      const resp = await p(
+        () => 123,
+        (n) => ep(n + 1),
+        (n) => "qwe"
+      )();
+      expect(iep(resp)).toEqual(true);
+      if (iep(resp)) {
+        expect(resp.r + 1).toEqual(125)
+      }
     });
   });
 });

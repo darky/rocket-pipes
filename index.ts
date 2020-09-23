@@ -701,3 +701,7 @@ export function rocketPipe(...functions: Array<Function>): (...args: unknown[]) 
 
   return fn;
 }
+
+export const p = rocketPipe;
+export const ep = exitPipe;
+export const iep = isExitPipeValue;
