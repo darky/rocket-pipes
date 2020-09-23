@@ -32,7 +32,7 @@ Powerful pipes for TypeScript, that chain Promise and ADT like Maybe or Either f
 ##### Basic
 
 ```ts
-const resp = await rocketPipe(
+const resp = await p(
   () => 123,
   (n) => n + 1
 )();
@@ -42,18 +42,18 @@ expect(resp + 1).toEqual(125);
 ##### Exit pipeline
 
 ```ts
-const resp = await rocketPipe(
+const resp = await p(
   () => 123,
-  (n) => exitPipe(n + 1),
+  (n) => ep(n + 1),
   (n) => "qwe"
 )();
-isExitPipeValue(resp) && expect(resp.r + 1).toEqual(125);
+iep(resp) && expect(resp.r + 1).toEqual(125);
 ```
 
 ##### Replace pipeline
 
 ```ts
-const fn = rocketPipe(
+const fn = p(
   () => 123,
   (n) => n + 1
 );
@@ -72,7 +72,7 @@ afterAll((label, n) => {
   expect(label).toEqual("test");
   expect(n).toEqual(125);
 });
-rocketPipe(
+p(
   (n: number) => n + 1,
   (n) => n + 1
 ).label("test")(123);
@@ -88,7 +88,7 @@ clearBeforeAll();
 ##### Promise basic
 
 ```ts
-const resp = await rocketPipe(
+const resp = await p(
   () => Promise.resolve(123),
   (n) => n + 1
 )();
@@ -98,7 +98,7 @@ expect(resp + 1).toEqual(125);
 ##### Either right
 
 ```ts
-const resp = await rocketPipe(
+const resp = await p(
   () => Either.right(123),
   (n) => n + 1
 )();
@@ -108,7 +108,7 @@ expect(resp + 1).toEqual(125);
 ##### Promise can include anything supported
 
 ```ts
-const resp = await rocketPipe(
+const resp = await p(
   () => Promise.resolve(Either.right(123)),
   (n) => n + 1
 )();
@@ -118,7 +118,7 @@ expect(resp + 1).toEqual(125);
 ##### Either left
 
 ```ts
-const resp = await rocketPipe(
+const resp = await p(
   () => Either.left(123),
   (_, l) => l + 1
 )();
@@ -128,7 +128,7 @@ expect(resp + 1).toEqual(125);
 ##### Maybe some
 
 ```ts
-const resp = await rocketPipe(
+const resp = await p(
   () => Maybe.some(123),
   (n) => n + 1
 )();
@@ -138,7 +138,7 @@ expect(resp + 1).toEqual(125);
 ##### Maybe none
 
 ```ts
-const resp = await rocketPipe(
+const resp = await p(
   () => Maybe.none(),
   (s, n) => s || n
 )();
@@ -148,7 +148,7 @@ expect(resp).toEqual(void 0);
 ##### Validation success
 
 ```ts
-const resp = await rocketPipe(
+const resp = await p(
   () => Validation.success(123),
   (n) => n + 1
 )();
@@ -158,7 +158,7 @@ expect(resp + 1).toEqual(125);
 ##### Validation fail
 
 ```ts
-const resp = await rocketPipe(
+const resp = await p(
   () => Validation.fail(123),
   (_, l) => l + 1
 )();
