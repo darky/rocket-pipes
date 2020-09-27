@@ -7,7 +7,7 @@ import type { Union } from "ts-toolbelt";
 
 type Exists = boolean | string | number | bigint | symbol | void | null | object;
 
-type ExitPipeReturnValue<T> = { r: T };
+export type ExitPipeReturnValue<T> = { r: T };
 
 type FnReturn<T, L, R> =
   | Promise<FpTsEither<L, T> | MaybeAsync<T> | EitherAsync<L, T> | PurifyEither<L, T> | PurifyMaybe<T> | Either<L, T> | Maybe<T> | ExitPipeReturnValue<R> | Validation<L, T> | T>
