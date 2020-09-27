@@ -16,16 +16,16 @@ Powerful pipes for TypeScript, that chain Promise and ADT like Maybe or Either f
 
 ### Library support
 
-| Vanilla | Monet                 | Purify                 |
-|---------|-----------------------|------------------------|
-| Promise | Either                | Either                 |
-|         | Maybe                 | Maybe                  |
-|         | Validation            | EitherAsync            |
-|         | Promise\<Either\>     | MaybeAsync             |
-|         | Promise\<Maybe\>      | Promise\<Either\>      |
-|         | Promise\<Validation\> | Promise\<Maybe\>       |
-|         |                       | Promise\<EitherAsync\> |
-|         |                       | Promise\<MaybeAsync\>  |
+| Vanilla | Monet                 | Purify                 | fp-ts             |
+|---------|-----------------------|------------------------|-------------------|
+| Promise | Either                | Either                 | Either            |
+|         | Maybe                 | Maybe                  | Promise\<Either\> |
+|         | Validation            | EitherAsync            |                   |
+|         | Promise\<Either\>     | MaybeAsync             |                   |
+|         | Promise\<Maybe\>      | Promise\<Either\>      |                   |
+|         | Promise\<Validation\> | Promise\<Maybe\>       |                   |
+|         |                       | Promise\<EitherAsync\> |                   |
+|         |                       | Promise\<MaybeAsync\>  |                   |
 
 ### Examples
 
