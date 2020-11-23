@@ -46,19 +46,19 @@
   "license": "MIT",
   "dependencies": {
     "@ramda/pipewith": "0.26.1",
-    "fp-ts": "2.8.3",
+    "fp-ts": "2.9.0",
     "monet": "0.9.1",
     "p-is-promise": "3.0.0",
-    "purify-ts": "0.15.1",
-    "ts-toolbelt": "8.0.6"
+    "purify-ts": "0.16.1",
+    "ts-toolbelt": "8.0.7"
   },
   "devDependencies": {
-    "@types/jest": "26.0.14",
-    "@types/ramda": "0.27.20",
-    "jest": "26.4.2",
+    "@types/jest": "26.0.15",
+    "@types/ramda": "0.27.32",
+    "jest": "26.6.3",
     "ramda": "0.27.1",
     "rimraf": "3.0.2",
-    "ts-jest": "26.4.1",
-    "typescript": "4.0.3"
+    "ts-jest": "26.4.4",
+    "typescript": "4.1.2"
   }
 }
