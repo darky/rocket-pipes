@@ -102,29 +102,29 @@ const labelsFns = new WeakMap<object, string>();
 export const isExitPipeValue = <T>(x: unknown): x is ExitPipeReturnValue<T> => exitPipeReturnValues.has(x as object);
 
 const isMonetCata = <L, R>(x: unknown): x is Catamorphism<L, R> =>
-  x &&
+  !!x &&
   typeof (x as Catamorphism<L, R>).cata === "function" &&
   ((typeof (x as Either<L, R>).isLeft === "function" && typeof (x as Either<L, R>).isRight === "function") ||
     (typeof (x as Maybe<R>).isSome === "function" && typeof (x as Maybe<R>).isNone === "function") ||
     (typeof (x as Validation<L, R>).isSuccess === "function" && typeof (x as Validation<L, R>).isFail === "function"));
 
 const isPurifyEither = <L, R>(x: unknown): x is PurifyEither<L, R> =>
-  x && typeof (x as PurifyEither<L, R>).either === "function" && typeof (x as PurifyEither<L, R>).isLeft === "function" && typeof (x as PurifyEither<L, R>).isRight === "function";
+  !!x && typeof (x as PurifyEither<L, R>).either === "function" && typeof (x as PurifyEither<L, R>).isLeft === "function" && typeof (x as PurifyEither<L, R>).isRight === "function";
 
 const isPurifyMaybe = <T>(x: unknown): x is PurifyMaybe<T> =>
-  x && typeof (x as PurifyMaybe<T>).caseOf === "function" && typeof (x as PurifyMaybe<T>).isJust === "function" && typeof (x as PurifyMaybe<T>).isNothing === "function";
+  !!x && typeof (x as PurifyMaybe<T>).caseOf === "function" && typeof (x as PurifyMaybe<T>).isJust === "function" && typeof (x as PurifyMaybe<T>).isNothing === "function";
 
 const isPurifyEitherAsync = <L, R>(x: unknown): x is EitherAsync<L, R> =>
-  x &&
+  !!x &&
   typeof (x as EitherAsync<L, R>).toMaybeAsync === "function" &&
   typeof (x as EitherAsync<L, R>).run === "function" &&
   typeof (x as EitherAsync<L, R>).chainLeft === "function";
 
 const isPurifyMaybeAsync = <T>(x: unknown): x is MaybeAsync<T> =>
-  x && typeof (x as MaybeAsync<T>).toEitherAsync === "function" && typeof (x as MaybeAsync<T>).run === "function" && typeof (x as MaybeAsync<T>).chain === "function";
+  !!x && typeof (x as MaybeAsync<T>).toEitherAsync === "function" && typeof (x as MaybeAsync<T>).run === "function" && typeof (x as MaybeAsync<T>).chain === "function";
 
 const isFpTsEither = <L, R>(x: unknown): x is FpTsEither<L, R> =>
-  x && ((x as FpTsEither<L, R>)._tag === 'Left' || (x as FpTsEither<L, R>)._tag === 'Right');
+  !!x && ((x as FpTsEither<L, R>)._tag === 'Left' || (x as FpTsEither<L, R>)._tag === 'Right');
 
 const compose = (fn: Function, res: unknown): unknown => {
   if (isExitPipeValue(res)) {
