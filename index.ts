@@ -104,6 +104,8 @@ type ExtractExitPipe10<R10, R9, R8, R7, R6, R5, R4, R3, R2, R1> = (Union.Select<
 
 type AopCallback = (label: string, ...args: unknown[]) => unknown;
 
+const pipeSymbol = Symbol('rocketPipe');
+
 const pipeContextFns = new WeakSet();
 const exitPipeReturnValues = new WeakSet();
 const beforeAllFns = new Set<AopCallback>();
@@ -707,32 +709,40 @@ export function rocketPipe<V0, V1, V2, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, 
 export function rocketPipe(...functions: Array<Function>): (...args: unknown[]) => unknown {
   const fns = Array.from(functions);
 
-  const fn = async (...args: unknown[]) => {
-    await Promise.all(Array.from(beforeAllFns.values()).map((f) => f(labelsFns.get(fn) || "unknown", ...args)));
+  const rpFn = async (...args: unknown[]) => {
+    await Promise.all(Array.from(beforeAllFns.values()).map((f) => f(labelsFns.get(rpFn) || "unknown", ...args)));
     return pipeWith(async (fn, res) => (isPromise(res) ? res.then((x) => compose(fn, x)).catch(() => res) : compose(fn, res)), [
       ...fns.map((fn) => async (r: unknown, l: unknown) => fn(r, l)),
       (r: unknown, l: unknown) => r ?? l,
-      (resp: unknown) => Promise.all(Array.from(afterAllFns.values()).map((f) => f(labelsFns.get(fn) || "unknown", resp))).then(() => resp),
+      (resp: unknown) => Promise.all(Array.from(afterAllFns.values()).map((f) => f(labelsFns.get(rpFn) || "unknown", resp))).then(() => resp),
     ])(...args);
   };
 
-  fn.replace = (replacements: Array<[number, Function]>) => {
+  rpFn.replace = (replacements: Array<[number, Function]>) => {
     replacements.forEach(([i, fn]) => (fns[i] = fn));
-    return fn;
+    return rpFn;
   };
 
-  fn.label = (label: string) => {
-    labelsFns.set(fn, label);
-    return fn;
+  rpFn.label = (label: string) => {
+    labelsFns.set(rpFn, label);
+    return rpFn;
   };
 
-  fn.context = (ctx: unknown) => {
-    fns.forEach((fn, i) => pipeContextFns.has(fn)
-      && (fns[i] = fn(ctx)))
-    return fn;
+  rpFn.context = (ctx: unknown) => {
+    fns.forEach((fn, i) => {
+      if (pipeContextFns.has(fn)) {
+        fns[i] = fn(ctx);
+      }
+      if ((fn as any)[pipeSymbol]) {
+        fns[i] = (fn as typeof rpFn).context(ctx);
+      }
+    });
+    return rpFn;
   };
 
-  return fn;
+  (rpFn as any)[pipeSymbol] = true;
+
+  return rpFn;
 }
 
 export const p = rocketPipe;

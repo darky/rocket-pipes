@@ -45,7 +45,7 @@ describe("Rocket pipes tests", () => {
     });
   });
 
-  describe("Utils", () => {
+  describe("Exit pipeline", () => {
     it("Exit pipeline", async () => {
       const resp = await rocketPipe(
         () => 123,
@@ -101,7 +101,41 @@ describe("Rocket pipes tests", () => {
         expect(resp.r + 1).toEqual(126)
       }
     });
+  });
 
+  describe("Context pipeline", () => {
+    it("Context pass simple", async () => {
+      const resp = await rocketPipe(
+        () => 123,
+        pipeContext((ctx: {n: number}) => n => n + ctx.n),
+        n => n + 1
+      ).context({n: 1})();
+      expect(resp + 1).toEqual(126);
+    });
+
+    it("Context compatibility with left", async () => {
+      const resp = await rocketPipe(
+        () => Either.left(123),
+        pipeContext((ctx: {n: number}) => (n, l) => l + ctx.n),
+        n => n + 1
+      ).context({n: 1})();
+      expect(resp + 1).toEqual(126);
+    });
+
+    it("Context pass nested", async () => {
+      const resp = await rocketPipe(
+        () => 123,
+        rocketPipe(
+          (n: number) => n + 1,
+          pipeContext((ctx: {n: number}) => n => n + ctx.n)
+        ),
+        n => n + 1
+      ).context({n: 1})();
+      expect(resp + 1).toEqual(127);
+    });
+  });
+
+  describe("Replace pipeline", () => {
     it("Replace fn on the fly", async () => {
       const fn = rocketPipe(
         () => 123,
@@ -110,16 +144,7 @@ describe("Rocket pipes tests", () => {
       const resp = await fn.replace([[0, () => 124]])();
       expect(resp + 1).toEqual(126);
     });
-
-    it("Context pass", async () => {
-      const resp = await rocketPipe(
-        () => 123,
-        pipeContext((ctx: {n: number}) => n => n + ctx.n),
-        n => n + 1
-      ).context({n: 1})();
-      expect(resp + 1).toEqual(126);
-    });
-  });
+  })
 
   describe("Promise", () => {
     it("Promise passthrough test", async () => {
