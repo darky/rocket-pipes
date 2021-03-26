@@ -11,7 +11,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "npm run clean && tsc",
-    "test": "jest",
+    "test": "node --unhandled-rejections=warn node_modules/.bin/jest",
     "prepublishOnly": "npm run build"
   },
   "files": [
