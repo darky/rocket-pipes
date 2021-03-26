@@ -1,4 +1,4 @@
-import { rocketPipe, exitPipe, clearAfterAll, clearBeforeAll, beforeAll as ba, afterAll as aa, isExitPipeValue, p, ep, iep } from "./index";
+import { rocketPipe, exitPipe, clearAfterAll, clearBeforeAll, beforeAll as ba, afterAll as aa, isExitPipeValue, p, ep, iep, pipeContext, pc } from "./index";
 import { Either, Maybe, Validation } from "monet";
 import { Either as PurifyEither, Left as PurifyLeft, Maybe as PurifyMaybe, EitherAsync, MaybeAsync } from "purify-ts";
 import { left, right } from 'fp-ts/Either';
@@ -108,6 +108,15 @@ describe("Rocket pipes tests", () => {
         (n) => n + 1
       );
       const resp = await fn.replace([[0, () => 124]])();
+      expect(resp + 1).toEqual(126);
+    });
+
+    it("Context pass", async () => {
+      const resp = await rocketPipe(
+        () => 123,
+        pipeContext((ctx: {n: number}) => n => n + ctx.n),
+        n => n + 1
+      ).context({n: 1})();
       expect(resp + 1).toEqual(126);
     });
   });
@@ -639,6 +648,15 @@ describe("Rocket pipes tests", () => {
       if (iep(resp)) {
         expect(resp.r + 1).toEqual(125)
       }
+    });
+
+    it("Context pass", async () => {
+      const resp = await p(
+        () => 123,
+        pc((ctx: {n: number}) => n => n + ctx.n),
+        n => n + 1
+      ).context({n: 1})();
+      expect(resp + 1).toEqual(126);
     });
   });
 });
