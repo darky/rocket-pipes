@@ -731,10 +731,10 @@ export function rocketPipe(...functions: Array<Function>): (...args: unknown[]) 
   rpFn.context = (ctx: unknown) => {
     fns.forEach((fn, i) => {
       if (pipeContextFns.has(fn)) {
-        fns[i] = fn(ctx);
+        return fns[i] = fn(ctx);
       }
       if ((fn as any)[pipeSymbol]) {
-        fns[i] = (fn as typeof rpFn).context(ctx);
+        return fns[i] = (fn as typeof rpFn).context(ctx);
       }
     });
     return rpFn;

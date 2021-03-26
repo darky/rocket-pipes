@@ -133,6 +133,18 @@ describe("Rocket pipes tests", () => {
       ).context({n: 1})();
       expect(resp + 1).toEqual(127);
     });
+
+    it("Override nested context", async () => {
+      const resp = await rocketPipe(
+        () => 123,
+        rocketPipe(
+          (n: number) => n + 1,
+          pipeContext((ctx: {n: number}) => n => n + ctx.n)
+        ).context({n: 4}),
+        n => n + 1
+      ).context({n: 1})();
+      expect(resp + 1).toEqual(130);
+    });
   });
 
   describe("Replace pipeline", () => {
