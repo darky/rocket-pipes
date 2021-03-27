@@ -8,10 +8,10 @@ Powerful pipes for TypeScript, that chain Promise and ADT like Maybe or Either f
 - 💡 Type inference. No worries about manual typing work. Types of resolved values inferred automatically.
 - ⛓️ FP libraries friendly. Understand Catamorphism/Foldable libraries.
 - 🖇️ Mix of Promise with FP library. Yes! Catamorphism/Foldable can be included in Promise.
+- 📉 Context. Easy pass context through all pipes.
 - 🚪 Pipeline exit (even nested exit). You can exit from any place of pipeline with result value (it's also have proper type inference 🤘)
 - 🏹 Pipeline replace. You can replace function on pipeline to another on the fly. Useful for mock testing.
 - ➰ AOP. Use beforeAll/afterAll hooks for your pipelines.
-- 🏓 Errors as rejected promises. You decide what need throw or handle.
 - 🦥 Lazy. Pipeline returns function, that can be used later. It's friendly with Ramda or Sanctuary.
 
 ### Library support
@@ -37,6 +37,17 @@ const resp = await p(
   (n) => n + 1
 )();
 expect(resp + 1).toEqual(125);
+```
+
+##### Context
+
+```ts
+const resp = await p(
+  () => 123,
+  pc((ctx: {n: number}) => n => n + ctx.n),
+  n => n + 1
+).context({n: 1})();
+expect(resp + 1).toEqual(126);
 ```
 
 ##### Exit pipeline
