@@ -76,17 +76,17 @@ expect(resp + 1).toEqual(126);
 
 ```ts
 beforeAll((label, n) => {
-  expect(label).toEqual("test");
+  expect(label).toEqual("(n) => n + 1\n(n) => n + 1");
   expect(n).toEqual(123);
 });
 afterAll((label, n) => {
-  expect(label).toEqual("test");
+  expect(label).toEqual("(n) => n + 1\n(n) => n + 1");
   expect(n).toEqual(125);
 });
 p(
   (n: number) => n + 1,
   (n) => n + 1
-).label("test")(123);
+)(123);
 ```
 
 ##### AOP clear hooks
