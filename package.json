@@ -1,6 +1,6 @@
 {
   "name": "rocket-pipes",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "Powerful pipes for TypeScript, that chain Promise and ADT for you",
   "repository": {
     "type": "git",
@@ -24,6 +24,9 @@
     "ramda",
     "pipe",
     "pipeline",
+    "context",
+    "mock",
+    "exit",
     "Kleisli",
     "compose",
     "composition",
