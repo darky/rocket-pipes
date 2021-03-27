@@ -15,25 +15,35 @@ describe("Rocket pipes tests", () => {
     });
 
     it("Simple async error test", async () => {
-      expect(
-        rocketPipe(
+      let error = new Error('unknown');
+      try {
+        await rocketPipe(
           async () => {
             throw new Error("qwe");
           },
           (n) => n + 1
-        )()
-      ).rejects.toEqual("qwe");
+        )();
+      } catch(e) {
+        error = e;
+      } finally {
+        expect(error.message).toEqual('qwe');
+      }
     });
 
     it("Simple error test", async () => {
-      expect(
-        rocketPipe(
+      let error = new Error('unknown');
+      try {
+        await rocketPipe(
           () => {
             throw new Error("qwe");
           },
           (n) => n + 1
         )()
-      ).rejects.toEqual("qwe");
+      } catch(e) {
+        error = e;
+      } finally {
+        expect(error.message).toEqual('qwe');
+      }
     });
 
     it("Pass argument test", async () => {
@@ -145,6 +155,20 @@ describe("Rocket pipes tests", () => {
       ).context({n: 1})();
       expect(resp + 1).toEqual(130);
     });
+
+    it("Context not passed case", async () => {
+      let error = new Error('unknown');
+      try {
+        await rocketPipe(
+          () => 123,
+          pipeContext((ctx: {n: number}) => n => n + ctx.n),
+          n => n + 1
+        )();
+      } catch(e) {
+        error = e;
+      }
+      expect(error).toEqual('context not passed');
+    });
   });
 
   describe("Replace pipeline", () => {
@@ -168,12 +192,16 @@ describe("Rocket pipes tests", () => {
     });
 
     it("Promise reject test", async () => {
-      expect(
-        rocketPipe(
+      let error = new Error('unknown');
+      try {
+        await rocketPipe(
           () => Promise.reject(123),
           (n) => "qwe"
-        )()
-      ).rejects.toEqual(123);
+        )();
+      } catch(e) {
+        error = e;
+      }
+      expect(error).toEqual(123);
     });
 
     it("Promise thenable test", async () => {
@@ -520,15 +548,6 @@ describe("Rocket pipes tests", () => {
         (_, l) => EitherAsync<number, unknown>(({ liftEither }) => liftEither(PurifyLeft(l + 1)))
       )();
       expect(resp + 1).toEqual(125);
-    });
-
-    it("EitherAsync error test", async () => {
-      expect(
-        rocketPipe(
-          async () => EitherAsync(() => Promise.reject("qwe")),
-          (n) => n + 1
-        )()
-      ).rejects.toEqual("qwe");
     });
   });
 

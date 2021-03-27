@@ -701,8 +701,12 @@ export function rocketPipe(...functions: Array<Function>): (...args: unknown[]) 
 
   const rpFn = async (...args: unknown[]) => {
     await Promise.all(Array.from(beforeAllFns.values()).map((f) => f(fnsStr, ...args)));
-    return pipeWith(async (fn, res) => (isPromise(res) ? res.then((x) => compose(fn, x)).catch(() => res) : compose(fn, res)), [
-      ...fns.map((fn) => async (r: unknown, l: unknown) => fn(r, l)),
+    return pipeWith(async (fn, res) => (isPromise(res)
+      ? res.then((x) => compose(fn, x))
+      : compose(fn, res)),
+    [
+      ...fns.map((fn) => async (r: unknown, l: unknown) =>
+        pipeContextFns.has(fn) ? Promise.reject('context not passed') : fn(r, l)),
       (r: unknown, l: unknown) => r ?? l,
       (resp: unknown) => Promise.all(Array.from(afterAllFns.values()).map((f) => f(fnsStr, resp))).then(() => resp),
     ])(...args);
