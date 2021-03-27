@@ -24,61 +24,51 @@ type FnReturn<T, L, R> =
 
 type PipeReturn1<FnResult, F1> = FnResult & {
   replace: (r: [0, F1][]) => FnResult;
-  label: (label: string) => FnResult;
   context: (ctx: unknown) => FnResult;
 };
 
 type PipeReturn2<FnResult, F1, F2> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2]>) => FnResult;
-  label: (label: string) => FnResult;
   context: (ctx: unknown) => FnResult;
 };
 
 type PipeReturn3<FnResult, F1, F2, F3> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3]>) => FnResult;
-  label: (label: string) => FnResult;
   context: (ctx: unknown) => FnResult;
 };
 
 type PipeReturn4<FnResult, F1, F2, F3, F4> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3] | [3, F4]>) => FnResult;
-  label: (label: string) => FnResult;
   context: (ctx: unknown) => FnResult;
 };
 
 type PipeReturn5<FnResult, F1, F2, F3, F4, F5> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3] | [3, F4] | [4, F5]>) => FnResult;
-  label: (label: string) => FnResult;
   context: (ctx: unknown) => FnResult;
 };
 
 type PipeReturn6<FnResult, F1, F2, F3, F4, F5, F6> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3] | [3, F4] | [4, F5] | [5, F6]>) => FnResult;
-  label: (label: string) => FnResult;
   context: (ctx: unknown) => FnResult;
 };
 
 type PipeReturn7<FnResult, F1, F2, F3, F4, F5, F6, F7> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3] | [3, F4] | [4, F5] | [5, F6] | [6, F7]>) => FnResult;
-  label: (label: string) => FnResult;
   context: (ctx: unknown) => FnResult;
 };
 
 type PipeReturn8<FnResult, F1, F2, F3, F4, F5, F6, F7, F8> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3] | [3, F4] | [4, F5] | [5, F6] | [6, F7] | [7, F8]>) => FnResult;
-  label: (label: string) => FnResult;
   context: (ctx: unknown) => FnResult;
 };
 
 type PipeReturn9<FnResult, F1, F2, F3, F4, F5, F6, F7, F8, F9> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3] | [3, F4] | [4, F5] | [5, F6] | [6, F7] | [7, F8] | [8, F9]>) => FnResult;
-  label: (label: string) => FnResult;
   context: (ctx: unknown) => FnResult;
 };
 
 type PipeReturn10<FnResult, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3] | [3, F4] | [4, F5] | [5, F6] | [6, F7] | [7, F8] | [8, F9] | [9, F10]>) => FnResult;
-  label: (label: string) => FnResult;
   context: (ctx: unknown) => FnResult;
 };
 
@@ -102,7 +92,7 @@ type ExtractExitPipe9<R9, R8, R7, R6, R5, R4, R3, R2, R1> = (Union.Select<R9 | R
 
 type ExtractExitPipe10<R10, R9, R8, R7, R6, R5, R4, R3, R2, R1> = (Union.Select<R10 | R9 | R8 | R7 | R6 | R5 | R4 | R3 | R2 | R1, Exists, "extends->"> extends never ? never : ExitPipeReturnValue<Union.Select<R10 | R9 | R8 | R7 | R6 | R5 | R4 | R3 | R2 | R1, Exists, "extends->">>);
 
-type AopCallback = (label: string, ...args: unknown[]) => unknown;
+type AopCallback = (fns: string, ...args: unknown[]) => unknown;
 
 const pipeSymbol = Symbol('rocketPipe');
 
@@ -110,7 +100,6 @@ const pipeContextFns = new WeakSet();
 const exitPipeReturnValues = new WeakSet();
 const beforeAllFns = new Set<AopCallback>();
 const afterAllFns = new Set<AopCallback>();
-const labelsFns = new WeakMap<object, string>();
 
 export const isExitPipeValue = <T>(x: unknown): x is ExitPipeReturnValue<T> => exitPipeReturnValues.has(x as object);
 
@@ -708,23 +697,19 @@ export function rocketPipe<V0, V1, V2, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, 
 
 export function rocketPipe(...functions: Array<Function>): (...args: unknown[]) => unknown {
   const fns = Array.from(functions);
+  const fnsStr = fns.map(fn => fn.toString()).join('\n');
 
   const rpFn = async (...args: unknown[]) => {
-    await Promise.all(Array.from(beforeAllFns.values()).map((f) => f(labelsFns.get(rpFn) || "unknown", ...args)));
+    await Promise.all(Array.from(beforeAllFns.values()).map((f) => f(fnsStr, ...args)));
     return pipeWith(async (fn, res) => (isPromise(res) ? res.then((x) => compose(fn, x)).catch(() => res) : compose(fn, res)), [
       ...fns.map((fn) => async (r: unknown, l: unknown) => fn(r, l)),
       (r: unknown, l: unknown) => r ?? l,
-      (resp: unknown) => Promise.all(Array.from(afterAllFns.values()).map((f) => f(labelsFns.get(rpFn) || "unknown", resp))).then(() => resp),
+      (resp: unknown) => Promise.all(Array.from(afterAllFns.values()).map((f) => f(fnsStr, resp))).then(() => resp),
     ])(...args);
   };
 
   rpFn.replace = (replacements: Array<[number, Function]>) => {
     replacements.forEach(([i, fn]) => (fns[i] = fn));
-    return rpFn;
-  };
-
-  rpFn.label = (label: string) => {
-    labelsFns.set(rpFn, label);
     return rpFn;
   };
 

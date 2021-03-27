@@ -194,9 +194,9 @@ describe("Rocket pipes tests", () => {
       clearBeforeAll();
     });
 
-    it("beforeAll unknown label", (cb) => {
+    it("beforeAll", (cb) => {
       ba((label, n) => {
-        expect(label).toEqual("unknown");
+        expect(label).toEqual("(n) => n + 1\n(n) => n + 1");
         expect(n).toEqual(123);
         cb();
       });
@@ -206,9 +206,9 @@ describe("Rocket pipes tests", () => {
       )(123);
     });
 
-    it("afterAll unknown label", (cb) => {
+    it("afterAll", (cb) => {
       aa((label, n) => {
-        expect(label).toEqual("unknown");
+        expect(label).toEqual("(n) => n + 1\n(n) => n + 1");
         expect(n).toEqual(125);
         cb();
       });
@@ -216,30 +216,6 @@ describe("Rocket pipes tests", () => {
         (n: number) => n + 1,
         (n) => n + 1
       )(123);
-    });
-
-    it("beforeAll label", (cb) => {
-      ba((label, n) => {
-        expect(label).toEqual("test");
-        expect(n).toEqual(123);
-        cb();
-      });
-      rocketPipe(
-        (n: number) => n + 1,
-        (n) => n + 1
-      ).label("test")(123);
-    });
-
-    it("afterAll label", (cb) => {
-      aa((label, n) => {
-        expect(label).toEqual("test");
-        expect(n).toEqual(125);
-        cb();
-      });
-      rocketPipe(
-        (n: number) => n + 1,
-        (n) => n + 1
-      ).label("test")(123);
     });
   });
 
