@@ -53,7 +53,7 @@
     "monet": "0.9.2",
     "p-is-promise": "3.0.0",
     "purify-ts": "0.16.1",
-    "ts-toolbelt": "9.6.0"
+    "ts-toolbelt": "9.1.7"
   },
   "devDependencies": {
     "@types/jest": "26.0.22",
