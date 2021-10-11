@@ -24,7 +24,7 @@ describe("Rocket pipes tests", () => {
           (n) => n + 1
         )();
       } catch(e) {
-        error = e;
+        error = e as Error;
       } finally {
         expect(error.message).toEqual('qwe');
       }
@@ -40,7 +40,7 @@ describe("Rocket pipes tests", () => {
           (n) => n + 1
         )()
       } catch(e) {
-        error = e;
+        error = e as Error;
       } finally {
         expect(error.message).toEqual('qwe');
       }
@@ -165,7 +165,7 @@ describe("Rocket pipes tests", () => {
           n => n + 1
         )();
       } catch(e) {
-        error = e;
+        error = e as Error;
       }
       expect(error).toEqual('context not passed');
     });
@@ -199,7 +199,7 @@ describe("Rocket pipes tests", () => {
           (n) => "qwe"
         )();
       } catch(e) {
-        error = e;
+        error = e as Error;
       }
       expect(error).toEqual(123);
     });
