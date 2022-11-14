@@ -1,5 +1,5 @@
 {
-  "name": "@rocket-pipes/slim",
+  "name": "rocket-pipes-slim",
   "version": "0.10.3",
   "description": "Powerful pipes for TypeScript, that chain Promise and ADT for you",
   "repository": {
