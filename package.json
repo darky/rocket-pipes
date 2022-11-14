@@ -1,6 +1,6 @@
 {
   "name": "rocket-pipes",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "description": "Powerful pipes for TypeScript, that chain Promise and ADT for you",
   "repository": {
     "type": "git",
@@ -48,20 +48,20 @@
   "author": "Vladislav Botvin",
   "license": "MIT",
   "dependencies": {
-    "@ramda/pipewith": "0.26.1",
-    "fp-ts": "2.11.4",
-    "monet": "0.9.2",
-    "p-is-promise": "3.0.0",
-    "purify-ts": "0.16.3",
+    "@ramda/pipewith": "^0.26.1",
+    "fp-ts": "^2.13.1",
+    "monet": "^0.9.3",
+    "p-is-promise": "^3.0.0",
+    "purify-ts": "^0.16.3",
     "ts-toolbelt": "9.1.7"
   },
   "devDependencies": {
-    "@types/jest": "27.0.2",
-    "@types/ramda": "0.27.45",
-    "jest": "27.2.5",
-    "ramda": "0.27.1",
+    "@types/jest": "29.2.2",
+    "@types/ramda": "0.28.20",
+    "jest": "29.3.1",
+    "ramda": "0.28.0",
     "rimraf": "3.0.2",
-    "ts-jest": "27.0.5",
-    "typescript": "4.4.3"
+    "ts-jest": "29.0.3",
+    "typescript": "4.7.4"
   }
 }
