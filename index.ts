@@ -1,6 +1,3 @@
-import type { Either, Catamorphism, Maybe, Validation } from "monet";
-import type { Either as PurifyEither, Maybe as PurifyMaybe, EitherAsync, MaybeAsync } from "purify-ts";
-import { fold, Either as FpTsEither } from 'fp-ts/Either';
 import isPromise from "p-is-promise";
 import pipeWith from "@ramda/pipewith";
 import type { Union } from "ts-toolbelt";
@@ -10,16 +7,8 @@ type Exists = boolean | string | number | bigint | symbol | void | null | object
 export type ExitPipeReturnValue<T> = { r: T };
 
 type FnReturn<T, L, R> =
-  | Promise<FpTsEither<L, T> | MaybeAsync<T> | EitherAsync<L, T> | PurifyEither<L, T> | PurifyMaybe<T> | Either<L, T> | Maybe<T> | ExitPipeReturnValue<R> | Validation<L, T> | T>
-  | MaybeAsync<T>
-  | EitherAsync<L, T>
-  | PurifyMaybe<T>
-  | Validation<L, T>
-  | Maybe<T>
+  | Promise<ExitPipeReturnValue<R> | T>
   | ExitPipeReturnValue<R>
-  | Either<L, T>
-  | PurifyEither<L, T>
-  | FpTsEither<L, T>
   | T;
 
 type PipeReturn1<FnResult, F1> = FnResult & {
@@ -103,62 +92,9 @@ const afterAllFns = new Set<AopCallback>();
 
 export const isExitPipeValue = <T>(x: unknown): x is ExitPipeReturnValue<T> => exitPipeReturnValues.has(x as object);
 
-const isMonetCata = <L, R>(x: unknown): x is Catamorphism<L, R> =>
-  !!x &&
-  typeof (x as Catamorphism<L, R>).cata === "function" &&
-  ((typeof (x as Either<L, R>).isLeft === "function" && typeof (x as Either<L, R>).isRight === "function") ||
-    (typeof (x as Maybe<R>).isSome === "function" && typeof (x as Maybe<R>).isNone === "function") ||
-    (typeof (x as Validation<L, R>).isSuccess === "function" && typeof (x as Validation<L, R>).isFail === "function"));
-
-const isPurifyEither = <L, R>(x: unknown): x is PurifyEither<L, R> =>
-  !!x && typeof (x as PurifyEither<L, R>).either === "function" && typeof (x as PurifyEither<L, R>).isLeft === "function" && typeof (x as PurifyEither<L, R>).isRight === "function";
-
-const isPurifyMaybe = <T>(x: unknown): x is PurifyMaybe<T> =>
-  !!x && typeof (x as PurifyMaybe<T>).caseOf === "function" && typeof (x as PurifyMaybe<T>).isJust === "function" && typeof (x as PurifyMaybe<T>).isNothing === "function";
-
-const isPurifyEitherAsync = <L, R>(x: unknown): x is EitherAsync<L, R> =>
-  !!x &&
-  typeof (x as EitherAsync<L, R>).toMaybeAsync === "function" &&
-  typeof (x as EitherAsync<L, R>).run === "function" &&
-  typeof (x as EitherAsync<L, R>).chainLeft === "function";
-
-const isPurifyMaybeAsync = <T>(x: unknown): x is MaybeAsync<T> =>
-  !!x && typeof (x as MaybeAsync<T>).toEitherAsync === "function" && typeof (x as MaybeAsync<T>).run === "function" && typeof (x as MaybeAsync<T>).chain === "function";
-
-const isFpTsEither = <L, R>(x: unknown): x is FpTsEither<L, R> =>
-  !!x && ((x as FpTsEither<L, R>)._tag === 'Left' || (x as FpTsEither<L, R>)._tag === 'Right');
-
 const compose = (fn: Function, res: unknown): unknown => {
   if (isExitPipeValue(res)) {
     return res;
-  }
-  if (isMonetCata(res)) {
-    return res.cata(
-      (l) => fn(void 0, l),
-      (r) => fn(r)
-    );
-  }
-  if (isPurifyEither(res)) {
-    return res.either(
-      (l) => fn(void 0, l),
-      (r) => fn(r)
-    );
-  }
-  if (isPurifyMaybe(res)) {
-    return res.caseOf({
-      Just: (x) => fn(x),
-      Nothing: () => fn(void 0),
-    });
-  }
-  if (isPurifyEitherAsync(res) || isPurifyMaybeAsync(res)) {
-    const promise: Promise<unknown> = res.run();
-    return promise.then((x) => compose(fn, x)).catch(() => promise);
-  }
-  if (isFpTsEither(res)) {
-    return fold(
-      (l) => fn(void 0, l),
-      (r) => fn(r)
-    )(res);
   }
   return fn(res);
 };
