@@ -27,6 +27,8 @@ Powerful pipes for TypeScript, that chain Promise and ADT like Maybe or Either f
 |         |                       | Promise\<EitherAsync\> |                   |             |
 |         |                       | Promise\<MaybeAsync\>  |                   |             |
 
+*if you want slim version without libraries support, install slim version `npm install @rocket-pipes/slim`*
+
 ### Examples
 
 ##### Basic
