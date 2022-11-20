@@ -72,6 +72,9 @@ const fn = p(
 );
 const resp = await fn.replace([[0, () => 124]])();
 expect(resp + 1).toEqual(126);
+
+fn.replaceUndo();
+expect(await fn()).toEqual(125);
 ```
 
 ##### AOP beforeAll/afterAll hooks

@@ -13,51 +13,61 @@ type FnReturn<T, L, R> =
 
 type PipeReturn1<FnResult, F1> = FnResult & {
   replace: (r: [0, F1][]) => FnResult;
+  replaceUndo: () => FnResult;
   context: (ctx: unknown) => FnResult;
 };
 
 type PipeReturn2<FnResult, F1, F2> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2]>) => FnResult;
+  replaceUndo: () => FnResult;
   context: (ctx: unknown) => FnResult;
 };
 
 type PipeReturn3<FnResult, F1, F2, F3> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3]>) => FnResult;
+  replaceUndo: () => FnResult;
   context: (ctx: unknown) => FnResult;
 };
 
 type PipeReturn4<FnResult, F1, F2, F3, F4> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3] | [3, F4]>) => FnResult;
+  replaceUndo: () => FnResult;
   context: (ctx: unknown) => FnResult;
 };
 
 type PipeReturn5<FnResult, F1, F2, F3, F4, F5> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3] | [3, F4] | [4, F5]>) => FnResult;
+  replaceUndo: () => FnResult;
   context: (ctx: unknown) => FnResult;
 };
 
 type PipeReturn6<FnResult, F1, F2, F3, F4, F5, F6> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3] | [3, F4] | [4, F5] | [5, F6]>) => FnResult;
+  replaceUndo: () => FnResult;
   context: (ctx: unknown) => FnResult;
 };
 
 type PipeReturn7<FnResult, F1, F2, F3, F4, F5, F6, F7> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3] | [3, F4] | [4, F5] | [5, F6] | [6, F7]>) => FnResult;
+  replaceUndo: () => FnResult;
   context: (ctx: unknown) => FnResult;
 };
 
 type PipeReturn8<FnResult, F1, F2, F3, F4, F5, F6, F7, F8> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3] | [3, F4] | [4, F5] | [5, F6] | [6, F7] | [7, F8]>) => FnResult;
+  replaceUndo: () => FnResult;
   context: (ctx: unknown) => FnResult;
 };
 
 type PipeReturn9<FnResult, F1, F2, F3, F4, F5, F6, F7, F8, F9> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3] | [3, F4] | [4, F5] | [5, F6] | [6, F7] | [7, F8] | [8, F9]>) => FnResult;
+  replaceUndo: () => FnResult;
   context: (ctx: unknown) => FnResult;
 };
 
 type PipeReturn10<FnResult, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10> = FnResult & {
   replace: (r: Array<[0, F1] | [1, F2] | [2, F3] | [3, F4] | [4, F5] | [5, F6] | [6, F7] | [7, F8] | [8, F9] | [9, F10]>) => FnResult;
+  replaceUndo: () => FnResult;
   context: (ctx: unknown) => FnResult;
 };
 
@@ -87,6 +97,7 @@ const pipeSymbol = Symbol('rocketPipe');
 
 const pipeContextFns = new WeakSet();
 const exitPipeReturnValues = new WeakSet();
+const replacementFns = new WeakMap<Function, Array<Function>>();
 const beforeAllFns = new Set<AopCallback>();
 const afterAllFns = new Set<AopCallback>();
 
@@ -648,8 +659,20 @@ export function rocketPipe(...functions: Array<Function>): (...args: unknown[]) 
     ])(...args);
   };
 
+  replacementFns.set(rpFn, Array.from(fns));
+
   rpFn.replace = (replacements: Array<[number, Function]>) => {
-    replacements.forEach(([i, fn]) => (fns[i] = fn));
+    replacements.forEach(([i, fn]) => {
+      fns[i] = fn;
+    });
+    return rpFn;
+  };
+
+  rpFn.replaceUndo = () => {
+    const origFns = replacementFns.get(rpFn) ?? [];
+    fns.forEach((_, i) => {
+      fns[i] = origFns[i];
+    });
     return rpFn;
   };
 
