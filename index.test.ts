@@ -180,6 +180,16 @@ describe("Rocket pipes tests", () => {
       const resp = await fn.replace([[0, () => 124]])();
       expect(resp + 1).toEqual(126);
     });
+
+    it("Undo replace", async () => {
+      const fn = rocketPipe(
+        () => 123,
+        (n) => n + 1
+      );
+      fn.replace([[0, () => 124]])
+      fn.replaceUndo();
+      expect((await fn()) + 1).toEqual(125);
+    });
   })
 
   describe("Promise", () => {
