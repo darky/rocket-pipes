@@ -41,7 +41,7 @@ const resp = await p(
 expect(resp + 1).toEqual(125);
 ```
 
-##### Context
+##### Context (❗ mutable)
 
 ```ts
 const resp = await p(
@@ -63,7 +63,7 @@ const resp = await p(
 iep(resp) && expect(resp.r + 1).toEqual(125);
 ```
 
-##### Replace pipeline
+##### Replace pipeline (❗ mutable)
 
 ```ts
 const fn = p(
